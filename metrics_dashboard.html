@@ -1107,6 +1107,10 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Add Row
             </button>
+            <button class="btn-secondary" style="font-size:11px;padding:4px 10px;gap:4px;color:var(--s-red);border-color:var(--s-red)" onclick="hsClearTable()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              Clear Table
+            </button>
             <button class="btn-secondary" style="font-size:11px;padding:4px 10px;gap:4px" onclick="document.getElementById('hs-csv-input').click()">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               Load CSV / Excel
@@ -1257,6 +1261,10 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add Row
           </button>
+          <button class="btn-secondary" style="font-size:11px;padding:4px 10px;gap:4px;color:var(--s-red);border-color:var(--s-red)" onclick="pamClearTable()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            Clear Table
+          </button>
           <button class="btn-secondary" style="font-size:11px;padding:4px 10px;gap:4px" onclick="document.getElementById('pam-csv-input').click()">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Load CSV / Excel
@@ -1320,6 +1328,10 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
           <button class="btn-secondary" style="font-size:11px;padding:4px 10px;gap:4px" onclick="ppmGridAddRow()">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add Row
+          </button>
+          <button class="btn-secondary" style="font-size:11px;padding:4px 10px;gap:4px;color:var(--s-red);border-color:var(--s-red)" onclick="ppmClearTable()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            Clear Table
           </button>
           <button class="btn-secondary" style="font-size:11px;padding:4px 10px;gap:4px" onclick="document.getElementById('ppm-csv-input').click()">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -3256,6 +3268,18 @@ function ppmGridAddRow() {
   ppmGridOnChange(null);
 }
 
+function ppmClearTable() {
+  if (!confirm('Clear all rows in the PPM Country table?')) return;
+  var body = document.getElementById('ppm-grid-body');
+  if (!body) return;
+  body.innerHTML = '';
+  var foot = document.getElementById('ppm-grid-foot');
+  if (foot) foot.innerHTML = '';
+  var ta = document.getElementById('i-ppm-rows');
+  if (ta) ta.value = '[]';
+  renderPPM([]);
+}
+
 function ppmGridDeleteRow(tr) {
   tr.parentNode.removeChild(tr);
   ppmGridOnChange(null);
@@ -3523,6 +3547,18 @@ function pamGridAddRow() {
   var lastRow = body.rows[body.rows.length - 1];
   if (lastRow) { var inp = lastRow.querySelector('input'); if (inp) inp.focus(); }
   pamGridOnChange(null);
+}
+
+function pamClearTable() {
+  if (!confirm('Clear all rows in the PAM Country table?')) return;
+  var body = document.getElementById('pam-grid-body');
+  if (!body) return;
+  body.innerHTML = '';
+  var foot = document.getElementById('pam-grid-foot');
+  if (foot) foot.innerHTML = '';
+  var ta = document.getElementById('i-pam-rows');
+  if (ta) ta.value = '[]';
+  renderPAM([]);
 }
 
 function pamGridDeleteRow(tr) {
@@ -4582,6 +4618,15 @@ function hsGridAddRow() {
   var lastRow = body.rows[body.rows.length - 1];
   if (lastRow) { var inp = lastRow.querySelector('input'); if (inp) inp.focus(); }
   hsGridOnChange();
+}
+
+function hsClearTable() {
+  if (!confirm('Clear all rows in the Hiring Speed table?')) return;
+  var body = document.getElementById('hs-grid-body');
+  if (!body) return;
+  body.innerHTML = '';
+  hsGridFlushJson([]);
+  renderHS([]);
 }
 
 function hsGridExtractRows(body) {
