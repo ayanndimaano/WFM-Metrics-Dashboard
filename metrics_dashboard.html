@@ -496,101 +496,63 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
     <span id="snap-confirm" style="display:none;color:var(--s-green);font-size:12px;font-weight:600">&#10003; Snapshot saved!</span>
   </div>
 
-  <!-- Global period picker — applies to all sections at once -->
+  <!-- Global period picker — shows only periods with saved data -->
   <div class="global-period-bar" id="global-period-bar">
     <label>&#128197; Viewing period:</label>
-    <select id="gp-month" onchange="globalPeriodChange()"></select>
-    <select id="gp-year"  onchange="globalPeriodChange()"></select>
+    <div id="gp-period-btns" style="display:flex;gap:5px;flex-wrap:wrap;align-items:center"></div>
     <span class="global-period-snap-badge" id="gp-snap-badge">&#10003; Snapshot loaded</span>
-    <span class="global-period-live-badge" id="gp-live-badge">&#8226; Live data</span>
-    <button onclick="globalPeriodReset()" style="background:none;border:none;font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;padding:0 2px;font-family:inherit" title="Reset to today">&#8635; Reset</button>
+    <span class="global-period-live-badge" id="gp-live-badge">&#8226; Live</span>
   </div>
 
   <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION 1: Capacity -->
   <div class="section">
     <div class="section-hdr">
-      <div class="section-title" id="cap-title">Capacity Management &#8212; <span id="cap-period-label">August 2026</span><span class="period-picker"><select id="pp-cap-month" onchange="onPeriodPickerChange('cap')"></select><select id="pp-cap-year" onchange="onPeriodPickerChange('cap')"></select></span></div>
+      <div class="section-title" id="cap-title">Capacity Management &#8212; <span id="cap-period-label">August 2026</span></div>
       <div class="section-sub">Executive Snapshot · Source: <span id="d-cap-source">WF360 / Score</span></div>
     </div>
-    <div class="grid-2">
+    <!-- Capacity structured cards — populated by renderCapacityCards() -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:0">
 
-      <!-- Headcount / LCC / Band Mix &#8212; merged card -->
+      <!-- Card 1: Headcount + LCC + Band Mix -->
       <div class="card card-accent-left">
         <div class="card-body">
-
-          <!-- Row 1: Headcount full-width -->
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:14px">
-            <div>
-              <div class="kpi-label">Headcount</div>
-              <div class="kpi-value" id="d-hc-total">22,494</div>
-              <div class="kpi-deltas" style="margin-top:8px">
-                <span class="badge badge-red" id="d-hc-mtm">&#8595; -2.36% MtM</span>
-                <span class="badge badge-red" id="d-hc-yty">&#8595; -0.20% YtY</span>
-              </div>
-              <div class="kpi-note" style="margin-top:6px">Source: <span id="d-cap-source2">WF360</span></div>
+          <div class="kpi-label" style="margin-bottom:2px">Total Headcount</div>
+          <div class="kpi-value" id="d-cap-hc-total" style="font-size:2rem">22,494</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px" id="d-cap-hc-deltas">&#8595; -2.36% MtM &nbsp;|&nbsp; &#8595; -0.20% YtY</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
+            <div style="background:rgba(var(--tp-rgb),.06);border-radius:8px;padding:10px 12px">
+              <div class="kpi-label" style="font-size:10px;margin-bottom:3px">LCC Hires %</div>
+              <div class="kpi-value-sm" id="d-cap-lcc">72.50%</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:3px" id="d-cap-lcc-delta">-14.86% MtM | +1.13% YtY</div>
+              <div style="font-size:10px;color:var(--text3);font-style:italic;margin-top:2px" id="d-cap-lcc-note">Limited hiring due to freeze</div>
             </div>
-            <div class="kpi-icon-wrap">
-              <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <div style="background:rgba(var(--tp-rgb),.06);border-radius:8px;padding:10px 12px">
+              <div class="kpi-label" style="font-size:10px;margin-bottom:3px">Band Mix Score</div>
+              <div class="kpi-value-sm" id="d-cap-band-mix">4.66</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:3px" id="d-cap-band-delta">0.01 MtM | -0.02 YtY</div>
             </div>
           </div>
-
-          <!-- Divider -->
-          <div class="card-divider" style="margin:0 0 14px"></div>
-
-          <!-- Row 2: LCC left | Band Mix right -->
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;min-width:0">
-
-            <!-- LCC -->
-            <div style="padding-right:16px;border-right:1px solid var(--border);min-width:0;overflow:hidden">
-              <div class="kpi-label">Low-Cost Center Hires</div>
-              <div class="kpi-value-xs" id="d-lcc" style="margin-top:4px">72.50%</div>
-              <div class="kpi-deltas" style="margin-top:6px">
-                <span class="badge badge-red" id="d-lcc-delta">&#8595; -14.86% MtM</span>
-                <span class="badge badge-green">&#8593; +1.13% YtY</span>
-              </div>
-              <div class="kpi-note" id="d-lcc-note" style="margin-top:4px">Limited hiring due to freeze</div>
-            </div>
-
-            <!-- Band Mix -->
-            <div style="padding-left:16px;min-width:0;overflow:hidden">
-              <div class="kpi-label">Band Mix Score</div>
-              <div class="kpi-value-xs" id="d-band-mix" style="margin-top:4px">4.66</div>
-              <div class="kpi-deltas" style="margin-top:6px">
-                <span class="badge badge-blue" id="d-band-delta">0.01 MtM | -0.02 YtY</span>
-              </div>
-            </div>
-
-          </div>
-
         </div>
       </div>
 
-      <!-- Hiring Metrics -->
+      <!-- Card 2: Hiring Metrics funnel + change notes -->
       <div class="card card-accent-left">
         <div class="card-body">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px">
-            <div>
-              <div class="kpi-label">Hiring Metrics</div>
-              <div style="font-size:12px;color:var(--text2);margin-top:2px">Average in Days · <span id="d-hm-period">Aug '26</span></div>
-            </div>
-            <div class="kpi-icon-wrap">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div class="kpi-label">Hiring Metrics</div>
+            <div style="font-size:11px;color:var(--text3)" id="d-hm-period">Aug '26</div>
           </div>
-
-          <!-- Funnel diagram &#8212; redrawn by renderHiringFunnel() -->
-          <div id="hiring-funnel-wrap" style="margin:4px 0 10px"></div>
-
-          <div style="font-size:11.5px;color:var(--text2);line-height:1.7">
-            Submitted&#8594;Onboard <strong id="d-hms1">&#8593; 11.40% MtM | 17.69% YtY</strong><br>
-            Submitted&#8594;Approval <strong id="d-hms2">&#8593; 16.98% MtM | 9.74% YtY</strong><br>
-            Approval&#8594;Onboard <strong id="d-hms3">&#8593; 9.68% MtM | 7.95% YtY</strong>
+          <div id="hiring-funnel-wrap"></div>
+          <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:10.5px;color:var(--text3)">
+            <div><span style="font-weight:600;display:block;margin-bottom:1px">S&#8594;O change</span><span id="d-hms1">&#8213;</span></div>
+            <div><span style="font-weight:600;display:block;margin-bottom:1px">S&#8594;A change</span><span id="d-hms2">&#8213;</span></div>
+            <div><span style="font-weight:600;display:block;margin-bottom:1px">A&#8594;O change</span><span id="d-hms3">&#8213;</span></div>
           </div>
-          <div class="kpi-note" id="d-hm-note" style="margin-top:6px">Driven by hiring freeze</div>
+          <div style="margin-top:8px;font-size:10.5px;color:var(--text3);font-style:italic" id="d-hm-note"></div>
         </div>
       </div>
 
-    </div><!-- /grid-3 -->
+    </div>
 
     <!-- Hiring Speed by Country & Band ─────────────────────────────── -->
     <div class="card" style="margin-top:16px">
@@ -642,43 +604,16 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
   <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  <!-- SECTION 2: Fulfillment -->
   <div class="section">
     <div class="section-hdr">
-      <div class="section-title" id="ful-title">Fulfillment Management &#8212; <span id="ful-period-label">August 2026</span><span class="period-picker"><select id="pp-ful-month" onchange="onPeriodPickerChange('ful')"></select><select id="pp-ful-year" onchange="onPeriodPickerChange('ful')"></select></span></div>
+      <div class="section-title" id="ful-title">Fulfillment Management &#8212; <span id="ful-period-label">August 2026</span></div>
       <div class="section-sub">BO Fill Rate &#8212; Current Period</div>
     </div>
-    <div class="card card-accent-top card-hero">
-      <div class="card-body">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:14px">
-          <div>
-            <div class="kpi-label">BO Fill Rate <span class="badge badge-blue" style="font-size:10px;vertical-align:middle;margin-left:4px">Current</span></div>
-            <div style="font-size:13px;font-weight:600;color:var(--text2)" id="d-fr-aug-period">August 2026</div>
-            <div class="kpi-value" id="d-fr-aug" style="margin-top:4px">100%</div>
-          </div>
-          <div class="kpi-icon-wrap">
-            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
-          <div>
-            <div class="prog-label-row"><span>APAC/Japan</span><span id="d-fr-aug-apac">100%</span></div>
-            <div class="prog-track"><div class="prog-fill prog-fill-green" id="bar-fr-apac" style="width:100%"></div></div>
-          </div>
-          <div>
-            <div class="prog-label-row"><span>Americas</span><span id="d-fr-aug-amer">100%</span></div>
-            <div class="prog-track"><div class="prog-fill prog-fill-green" id="bar-fr-amer" style="width:100%"></div></div>
-          </div>
-          <div>
-            <div class="prog-label-row"><span>EMEA</span><span id="d-fr-aug-emea">100%</span></div>
-            <div class="prog-track"><div class="prog-fill prog-fill-green" id="bar-fr-emea" style="width:100%"></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div id="d-flex-fulfillment"></div>
   </div><!-- /section fulfillment -->
 
   <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€  <!-- SECTION 3: Workforce Performance -->
   <div class="section">
     <div class="section-hdr">
-      <div class="section-title" id="wfm-title">Workforce Performance &#8212; <span id="wfm-period-label">August 2026</span><span class="period-picker"><select id="pp-wfm-month" onchange="onPeriodPickerChange('wfm')"></select><select id="pp-wfm-year" onchange="onPeriodPickerChange('wfm')"></select></span></div>
+      <div class="section-title" id="wfm-title">Workforce Performance &#8212; <span id="wfm-period-label">August 2026</span></div>
       <div class="section-sub">Professional Accountability Metrics · As of <span id="d-pam-date">09/04/2026</span></div>
     </div>
 
@@ -780,7 +715,7 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
         </div>
 
         <div style="margin-top:8px;font-size:11px;color:var(--text3)">
-          Click a week snapshot above to view the full table below. Save snapshots from the <strong>Edit Inputs</strong> tab.
+          Showing weekly snapshots for the selected viewing period. Change the period above to see a different month's snapshots. Save new snapshots from the <strong>Edit Inputs</strong> tab.
           <span id="pam-week-count" style="margin-left:6px"></span>
         </div>
 
@@ -813,7 +748,7 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
   <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION 4: DI Issues -->
   <div class="section section-boxed">
     <div class="section-hdr">
-      <div class="section-title" id="di-title">DI Issues &#8212; <span id="di-period-label">August 2026</span><span class="period-picker"><select id="pp-di-month" onchange="onPeriodPickerChange('di')"></select><select id="pp-di-year" onchange="onPeriodPickerChange('di')"></select></span></div>
+      <div class="section-title" id="di-title">DI Issues &#8212; <span id="di-period-label">August 2026</span></div>
       <div class="section-sub">Data integrity monitoring · Weight vs. full population</div>
     </div>
     <div class="grid-4">
@@ -881,7 +816,7 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
   <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION 5: PPM -->
   <div class="section section-boxed">
     <div class="section-hdr">
-      <div class="section-title" id="ppm-title">PPM &#8212; <span id="ppm-period-label">August 2026</span><span class="period-picker"><select id="pp-ppm-month" onchange="onPeriodPickerChange('ppm')"></select><select id="pp-ppm-year" onchange="onPeriodPickerChange('ppm')"></select></span></div>
+      <div class="section-title" id="ppm-title">PPM &#8212; <span id="ppm-period-label">August 2026</span></div>
       <div class="section-sub">Practitioner Pipeline Management · <span id="d-ppm-hc-ref">21,982</span> FTEs reference</div>
     </div>
 
@@ -966,7 +901,7 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
   <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION 6: Utilization -->
   <div class="section section-boxed">
     <div class="section-hdr">
-      <div class="section-title" id="util-title">Utilization &#8212; <span id="util-period-label">August 2026</span><span class="period-picker"><select id="pp-util-month" onchange="onPeriodPickerChange('util')"></select><select id="pp-util-year" onchange="onPeriodPickerChange('util')"></select></span></div>
+      <div class="section-title" id="util-title">Utilization &#8212; <span id="util-period-label">August 2026</span></div>
       <div class="section-sub">QTD Capacity Utilization and compliance indicators</div>
     </div>
     <div class="hero-grid-5">
@@ -1069,31 +1004,23 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
           <span id="snap-confirm-capacity" style="display:none;color:var(--s-green);font-size:11px;font-weight:600">&#10003; Saved!</span>
         </div>
       </div>
-      <div class="inputs-grid">
-        <div class="input-section">
-          <h3>Capacity Management</h3>
-          <div class="field-row"><label>Period Label</label><input type="text" id="i-cap-period" value="August 2026"></div>
-          <div class="field-row"><label>Source (e.g. WF360 / Score)</label><input type="text" id="i-cap-source" value="WF360 / Score"></div>
-          <div class="field-row"><label>Headcount Total</label><input type="text" id="i-hc-total" value="22,494"></div>
-          <div class="field-row"><label>HC MtM</label><input type="text" id="i-hc-mtm" value="-2.36% MtM"></div>
-          <div class="field-row"><label>HC YtY</label><input type="text" id="i-hc-yty" value="-0.20% YtY"></div>
-          <div class="field-row"><label>Band Mix Score</label><input type="text" id="i-band-mix" value="4.66"></div>
-          <div class="field-row"><label>Band Mix Delta</label><input type="text" id="i-band-delta" value="0.01 MtM | -0.02 YtY"></div>
-          <div class="field-row"><label>LCC Hires %</label><input type="text" id="i-lcc" value="72.50%"></div>
-          <div class="field-row"><label>LCC Delta</label><input type="text" id="i-lcc-delta" value="-14.86% MtM | +1.13% YtY"></div>
-          <div class="field-row"><label>LCC Note</label><input type="text" id="i-lcc-note" value="Limited hiring due to freeze"></div>
+      <!-- Flex field editor — Capacity -->
+      <div class="input-section" style="margin-bottom:12px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+          <label style="font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap">Period Label:</label>
+          <input type="text" id="i-cap-period" style="flex:1;padding:5px 8px;border:1px solid var(--input-border);border-radius:4px;font-size:12px;font-family:inherit;background:var(--card);color:var(--text)" value="August 2026" oninput="flexFieldsSync('capacity')">
         </div>
-        <div class="input-section">
-          <h3>Hiring Metrics</h3>
-          <div class="field-row"><label>Period Label (e.g. Aug '26)</label><input type="text" id="i-hm-period" value="Aug '26"></div>
-          <div class="field-row"><label>Submitted to Onboard (days)</label><input type="text" id="i-hm-s2o" value="69.57"></div>
-          <div class="field-row"><label>Submitted to Approval (days)</label><input type="text" id="i-hm-s2a" value="17.22"></div>
-          <div class="field-row"><label>Approval to Onboard (days)</label><input type="text" id="i-hm-a2o" value="52.35"></div>
-          <div class="field-row"><label>S2O Change</label><input type="text" id="i-hms1" value="&#8593; 11.40% MtM | 17.69% YtY"></div>
-          <div class="field-row"><label>S2A Change</label><input type="text" id="i-hms2" value="&#8593; 16.98% MtM | 9.74% YtY"></div>
-          <div class="field-row"><label>A2O Change</label><input type="text" id="i-hms3" value="&#8593; 9.68% MtM | 7.95% YtY"></div>
-          <div class="field-row"><label>Note</label><input type="text" id="i-hm-note" value="Driven by hiring freeze"></div>
-        </div>
+        <table id="flex-tbl-capacity" style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="background:var(--tbl-head)">
+              <th style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--tbl-head-text);text-align:left;width:40%">Label (shown on dashboard)</th>
+              <th style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--tbl-head-text);text-align:left">Value</th>
+              <th style="padding:6px 4px;width:30px"></th>
+            </tr>
+          </thead>
+          <tbody id="flex-body-capacity"></tbody>
+        </table>
+        <button class="btn-secondary" style="margin-top:8px;font-size:11px;padding:4px 10px" onclick="flexFieldAddRow('capacity')">+ Add Field</button>
       </div>
       <!-- ── Hiring Speed by Country & Band ────────────────────────────── -->
       <div class="input-section" style="margin-top:16px;overflow:auto">
@@ -1184,15 +1111,23 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
           <span id="snap-confirm-fulfillment" style="display:none;color:var(--s-green);font-size:11px;font-weight:600">&#10003; Saved!</span>
         </div>
       </div>
-      <div class="inputs-grid">
-        <div class="input-section">
-          <h3>Fill Rate</h3>
-          <div class="field-row"><label>Period Label</label><input type="text" id="i-fr-aug-period" value="August 2026"></div>
-          <div class="field-row"><label>Overall</label><input type="text" id="i-fr-aug" value="100%"></div>
-          <div class="field-row"><label>APAC/Japan</label><input type="text" id="i-fr-aug-apac" value="100%"></div>
-          <div class="field-row"><label>Americas</label><input type="text" id="i-fr-aug-amer" value="100%"></div>
-          <div class="field-row"><label>EMEA</label><input type="text" id="i-fr-aug-emea" value="100%"></div>
+      <!-- Flex field editor — Fulfillment -->
+      <div class="input-section" style="margin-bottom:12px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+          <label style="font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap">Period Label:</label>
+          <input type="text" id="i-fr-aug-period" style="flex:1;padding:5px 8px;border:1px solid var(--input-border);border-radius:4px;font-size:12px;font-family:inherit;background:var(--card);color:var(--text)" value="August 2026" oninput="flexFieldsSync('fulfillment')">
         </div>
+        <table id="flex-tbl-fulfillment" style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="background:var(--tbl-head)">
+              <th style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--tbl-head-text);text-align:left;width:40%">Label (shown on dashboard)</th>
+              <th style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--tbl-head-text);text-align:left">Value</th>
+              <th style="padding:6px 4px;width:30px"></th>
+            </tr>
+          </thead>
+          <tbody id="flex-body-fulfillment"></tbody>
+        </table>
+        <button class="btn-secondary" style="margin-top:8px;font-size:11px;padding:4px 10px" onclick="flexFieldAddRow('fulfillment')">+ Add Field</button>
       </div>
     </div>
 
@@ -1208,48 +1143,76 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
           <span id="snap-confirm-workforce" style="display:none;color:var(--s-green);font-size:11px;font-weight:600">&#10003; Saved!</span>
         </div>
       </div>
-      <div class="inputs-grid">
-        <div class="input-section">
-          <h3>Professional Accountability</h3>
-          <div class="field-row"><label>As-of Date</label><input type="text" id="i-pam-date" value="09/04/2026"></div>
-          <div class="field-row"><label>Overall %</label><input type="text" id="i-pam-overall" value="69.2%"></div>
-          <div class="field-row"><label>CV Compliance %</label><input type="text" id="i-pam-cv" value="73.2%"></div>
-          <div class="field-row"><label>Timely Claim %</label><input type="text" id="i-pam-tc" value="97.8%"></div>
-          <div class="field-row"><label>Hours Plan %</label><input type="text" id="i-pam-hp" value="78.3%"></div>
-          <div class="field-row"><label>JRS &amp; Skills %</label><input type="text" id="i-pam-jrs" value="27.6%"></div>
+      <!-- Flex field editor — Workforce -->
+      <div class="input-section" style="margin-bottom:12px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+          <label style="font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap">Period Label:</label>
+          <input type="text" id="i-wfm-period" style="flex:1;padding:5px 8px;border:1px solid var(--input-border);border-radius:4px;font-size:12px;font-family:inherit;background:var(--card);color:var(--text)" value="August 2026" oninput="flexFieldsSync('workforce')">
         </div>
-        <div class="input-section">
-          <h3>DI Issues</h3>
-          <div class="field-row"><label>JRS Not Valid Cases</label><input type="text" id="i-di-jrs" value="359"></div>
-          <div class="field-row"><label>JRS Not Valid Weight %</label><input type="text" id="i-di-jrs-w" value="1.6%"></div>
-          <div class="field-row"><label>On Bench Cases</label><input type="text" id="i-di-bench" value="120"></div>
-          <div class="field-row"><label>On Bench Weight %</label><input type="text" id="i-di-bench-w" value="0.6%"></div>
-          <div class="field-row"><label>JRS Mismatch Cases</label><input type="text" id="i-di-mismatch" value="571"></div>
-          <div class="field-row"><label>JRS Mismatch Weight %</label><input type="text" id="i-di-mismatch-w" value="2.6%"></div>
-          <div class="field-row"><label>Upcoming Bench (1-30d)</label><input type="text" id="i-di-ub30" value="120"></div>
-          <div class="field-row"><label>1-30d Weight %</label><input type="text" id="i-di-ub30-w" value="0.6%"></div>
-          <div class="field-row"><label>Upcoming Bench (31-90d)</label><input type="text" id="i-di-ub90" value="725"></div>
-          <div class="field-row"><label>31-90d Weight %</label><input type="text" id="i-di-ub90-w" value="3.3%"></div>
-        </div>
-        <div class="input-section">
-          <h3>PPM</h3>
-          <div class="field-row"><label>As-of Date</label><input type="text" id="i-ppm-date" value="08/18/2026"></div>
-          <div class="field-row"><label>Total Practitioners</label><input type="text" id="i-ppm-total" value="222"></div>
-          <div class="field-row"><label>% of HC</label><input type="text" id="i-ppm-pct" value="1.01%"></div>
-          <div class="field-row"><label>HC Reference (FTEs)</label><input type="text" id="i-ppm-hc-ref" value="21,982"></div>
-          <div class="field-row"><label>Monitor-Recent Assignment %</label><input type="text" id="i-ppm-monitor" value="42%"></div>
-          <div class="field-row"><label>Reskill/Upskill/Cross-skill %</label><input type="text" id="i-ppm-reskill" value="27.5%"></div>
-        </div>
-        <div class="input-section">
-          <h3>Utilization</h3>
-          <div class="field-row"><label>As-of Date</label><input type="text" id="i-util-date" value="09/04/2026"></div>
-          <div class="field-row"><label>QTD CU %</label><input type="text" id="i-util-qtd" value="94.9%"></div>
-          <div class="field-row"><label>Delta / Forecast Note</label><input type="text" id="i-util-delta" value="Delta 1.3%, Forecast vs QE Target (QE PV) -0.3%"></div>
-          <div class="field-row"><label>Missing Claim %</label><input type="text" id="i-util-mc" value="0.3%"></div>
-          <div class="field-row"><label>AAID %</label><input type="text" id="i-util-aaid" value="0.0%"></div>
-          <div class="field-row"><label>Idle-Time %</label><input type="text" id="i-util-idle" value="0.0%"></div>
-          <div class="field-row"><label>Learning %</label><input type="text" id="i-util-learn" value="0.7%"></div>
-        </div>
+        <table id="flex-tbl-workforce" style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="background:var(--tbl-head)">
+              <th style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--tbl-head-text);text-align:left;width:40%">Label (shown on dashboard)</th>
+              <th style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--tbl-head-text);text-align:left">Value</th>
+              <th style="padding:6px 4px;width:30px"></th>
+            </tr>
+          </thead>
+          <tbody id="flex-body-workforce"></tbody>
+        </table>
+        <button class="btn-secondary" style="margin-top:8px;font-size:11px;padding:4px 10px" onclick="flexFieldAddRow('workforce')">+ Add Field</button>
+      </div>
+      <!-- Keep PAM/DI/PPM/Util structured inputs below for FIELD_MAP / snapshot compatibility -->
+      <div style="display:none">
+        <input type="text" id="i-pam-date" value="09/04/2026">
+        <input type="text" id="i-pam-overall" value="69.2%">
+        <input type="text" id="i-pam-cv" value="73.2%">
+        <input type="text" id="i-pam-tc" value="97.8%">
+        <input type="text" id="i-pam-hp" value="78.3%">
+        <input type="text" id="i-pam-jrs" value="27.6%">
+        <input type="text" id="i-di-jrs" value="359">
+        <input type="text" id="i-di-jrs-w" value="1.6%">
+        <input type="text" id="i-di-bench" value="120">
+        <input type="text" id="i-di-bench-w" value="0.6%">
+        <input type="text" id="i-di-mismatch" value="571">
+        <input type="text" id="i-di-mismatch-w" value="2.6%">
+        <input type="text" id="i-di-ub30" value="120">
+        <input type="text" id="i-di-ub30-w" value="0.6%">
+        <input type="text" id="i-di-ub90" value="725">
+        <input type="text" id="i-di-ub90-w" value="3.3%">
+        <input type="text" id="i-ppm-date" value="08/18/2026">
+        <input type="text" id="i-ppm-total" value="222">
+        <input type="text" id="i-ppm-pct" value="1.01%">
+        <input type="text" id="i-ppm-hc-ref" value="21,982">
+        <input type="text" id="i-ppm-monitor" value="42%">
+        <input type="text" id="i-ppm-reskill" value="27.5%">
+        <input type="text" id="i-util-date" value="09/04/2026">
+        <input type="text" id="i-util-qtd" value="94.9%">
+        <input type="text" id="i-util-delta" value="Delta 1.3%, Forecast vs QE Target (QE PV) -0.3%">
+        <input type="text" id="i-util-mc" value="0.3%">
+        <input type="text" id="i-util-aaid" value="0.0%">
+        <input type="text" id="i-util-idle" value="0.0%">
+        <input type="text" id="i-util-learn" value="0.7%">
+        <input type="text" id="i-cap-source" value="WF360 / Score">
+        <input type="text" id="i-hc-total" value="22,494">
+        <input type="text" id="i-hc-mtm" value="-2.36% MtM">
+        <input type="text" id="i-hc-yty" value="-0.20% YtY">
+        <input type="text" id="i-band-mix" value="4.66">
+        <input type="text" id="i-band-delta" value="0.01 MtM | -0.02 YtY">
+        <input type="text" id="i-lcc" value="72.50%">
+        <input type="text" id="i-lcc-delta" value="-14.86% MtM | +1.13% YtY">
+        <input type="text" id="i-lcc-note" value="Limited hiring due to freeze">
+        <input type="text" id="i-hm-period" value="Aug '26">
+        <input type="text" id="i-hm-s2o" value="69.57">
+        <input type="text" id="i-hm-s2a" value="17.22">
+        <input type="text" id="i-hm-a2o" value="52.35">
+        <input type="text" id="i-hms1" value="&#8593; 11.40% MtM | 17.69% YtY">
+        <input type="text" id="i-hms2" value="&#8593; 16.98% MtM | 9.74% YtY">
+        <input type="text" id="i-hms3" value="&#8593; 9.68% MtM | 7.95% YtY">
+        <input type="text" id="i-hm-note" value="Driven by hiring freeze">
+        <input type="text" id="i-fr-aug" value="100%">
+        <input type="text" id="i-fr-aug-apac" value="100%">
+        <input type="text" id="i-fr-aug-amer" value="100%">
+        <input type="text" id="i-fr-aug-emea" value="100%">
       </div>
     </div>
 
@@ -1281,6 +1244,7 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
           <div class="pam-week-picker">
             <label for="pam-snap-date">Week ending:</label>
             <input type="date" id="pam-snap-date">
+            <span style="font-size:10px;color:var(--text3);margin-left:4px">(snapshot saved to that week's month)</span>
           </div>
           <button class="btn-primary" style="font-size:11px;padding:4px 12px;gap:5px" onclick="savePamWeekSnapshot()">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -1729,6 +1693,226 @@ function renderHiringFunnel() {
 }
 
 // â”€â”€ Field map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+// ── Flex Fields ───────────────────────────────────────────────────────────────
+var FLEX_FIELDS_DEFAULTS = {
+  capacity: [
+    {label:'Period', value:'August 2026'},
+    {label:'Source', value:'WF360 / Score'},
+    {label:'Headcount', value:'22,494'},
+    {label:'HC MtM', value:'\u2193 -2.36% MtM'},
+    {label:'HC YtY', value:'\u2193 -0.20% YtY'},
+    {label:'Band Mix Score', value:'4.66'},
+    {label:'Band Mix Delta', value:'0.01 MtM | -0.02 YtY'},
+    {label:'LCC Hires %', value:'72.50%'},
+    {label:'LCC Delta', value:'-14.86% MtM | +1.13% YtY'},
+    {label:'LCC Note', value:'Limited hiring due to freeze'},
+    {label:'Hiring Metrics Period', value:"Aug '26"},
+    {label:'Submitted \u2192 Onboard', value:'69.57 days'},
+    {label:'Submitted \u2192 Approval', value:'17.22 days'},
+    {label:'Approval \u2192 Onboard', value:'52.35 days'},
+    {label:'S2O Change', value:'\u2191 11.40% MtM | 17.69% YtY'},
+    {label:'S2A Change', value:'\u2191 16.98% MtM | 9.74% YtY'},
+    {label:'A2O Change', value:'\u2191 9.68% MtM | 7.95% YtY'},
+    {label:'Hiring Note', value:'Driven by hiring freeze'}
+  ],
+  fulfillment: [
+    {label:'Period', value:'August 2026'},
+    {label:'BO Fill Rate', value:'100%'},
+    {label:'APAC/Japan', value:'100%'},
+    {label:'Americas', value:'100%'},
+    {label:'EMEA', value:'100%'}
+  ],
+  workforce: [
+    {label:'PAM As-of Date', value:'09/04/2026'},
+    {label:'PAM Overall', value:'69.2%'},
+    {label:'CV Compliance', value:'73.2%'},
+    {label:'Timely Claim', value:'97.8%'},
+    {label:'Hours Plan', value:'78.3%'},
+    {label:'JRS & Skills', value:'27.6%'},
+    {label:'DI - JRS Not Valid', value:'359 (1.6%)'},
+    {label:'DI - On Bench', value:'120 (0.6%)'},
+    {label:'DI - JRS Mismatch', value:'571 (2.6%)'},
+    {label:'DI - Upcoming Bench 1-30d', value:'120 (0.6%)'},
+    {label:'DI - Upcoming Bench 31-90d', value:'725 (3.3%)'},
+    {label:'PPM As-of Date', value:'08/18/2026'},
+    {label:'Total Practitioners', value:'222 (1.01% of HC)'},
+    {label:'Monitor - Recent Assignment', value:'42%'},
+    {label:'Reskill/Upskill/Cross-skill', value:'27.5%'},
+    {label:'QTD CU', value:'94.9%'},
+    {label:'Missing Claim', value:'0.3%'},
+    {label:'AAID', value:'0.0%'},
+    {label:'Idle Time', value:'0.0%'},
+    {label:'Learning', value:'0.7%'}
+  ]
+};
+
+var FLEX_FIELDS = { capacity: null, fulfillment: null, workforce: null };
+
+function _loadFlexFields() {
+  ['capacity','fulfillment','workforce'].forEach(function(sec) {
+    var stored = null;
+    try { var s = localStorage.getItem('flex_fields_' + sec); if (s) stored = JSON.parse(s); } catch(e){}
+    FLEX_FIELDS[sec] = (stored && Array.isArray(stored) && stored.length) ? stored : FLEX_FIELDS_DEFAULTS[sec].slice();
+  });
+}
+
+function _saveFlexFields(sec) {
+  try { localStorage.setItem('flex_fields_' + sec, JSON.stringify(FLEX_FIELDS[sec])); } catch(e){}
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function flexFieldBuildGrid(sec) {
+  var tbody = document.getElementById('flex-body-' + sec);
+  if (!tbody) return;
+  var fields = FLEX_FIELDS[sec] || [];
+  var rows = '';
+  fields.forEach(function(f, i) {
+    rows += '<tr>'
+      + '<td style="padding:3px 4px"><input class="pam-grid-cell left" type="text" style="width:100%;box-sizing:border-box" value="' + escHtml(f.label) + '" oninput="flexFieldsSync(\'' + sec + '\')" data-flex-label="' + i + '"></td>'
+      + '<td style="padding:3px 4px"><input class="pam-grid-cell" type="text" style="width:100%;box-sizing:border-box" value="' + escHtml(f.value) + '" oninput="flexFieldsSync(\'' + sec + '\')" data-flex-value="' + i + '"></td>'
+      + '<td style="padding:3px 4px;text-align:center"><button class="pam-del-btn" onclick="flexFieldDelRow(\'' + sec + '\',' + i + ')" title="Remove">\u00D7</button></td>'
+      + '</tr>';
+  });
+  tbody.innerHTML = rows;
+}
+
+function flexFieldsSync(sec) {
+  var tbody = document.getElementById('flex-body-' + sec);
+  if (!tbody) return;
+  var labelInputs = tbody.querySelectorAll('[data-flex-label]');
+  var valueInputs = tbody.querySelectorAll('[data-flex-value]');
+  var fields = [];
+  for (var i = 0; i < labelInputs.length; i++) {
+    fields.push({ label: labelInputs[i].value, value: valueInputs[i].value });
+  }
+  FLEX_FIELDS[sec] = fields;
+  // Sync the period label hidden input for snapshot compatibility
+  var periodRow = null;
+  for (var j = 0; j < fields.length; j++) {
+    if (fields[j].label === 'Period') { periodRow = fields[j]; break; }
+  }
+  if (sec === 'capacity' && periodRow) {
+    var capInp = document.getElementById('i-cap-period');
+    if (capInp) capInp.value = periodRow.value;
+    var capLbl = document.getElementById('cap-period-label');
+    if (capLbl) capLbl.textContent = periodRow.value;
+    syncPeriodPicker('cap', periodRow.value);
+  }
+  if (sec === 'fulfillment' && periodRow) {
+    var frInp = document.getElementById('i-fr-aug-period');
+    if (frInp) frInp.value = periodRow.value;
+    var frLbl = document.getElementById('ful-period-label');
+    if (frLbl) frLbl.textContent = periodRow.value;
+    syncPeriodPicker('ful', periodRow.value);
+  }
+  _saveFlexFields(sec);
+  renderFlexSection(sec);
+}
+
+function flexFieldAddRow(sec) {
+  if (!FLEX_FIELDS[sec]) FLEX_FIELDS[sec] = [];
+  FLEX_FIELDS[sec].push({label:'', value:''});
+  flexFieldBuildGrid(sec);
+  // focus new label cell
+  var tbody = document.getElementById('flex-body-' + sec);
+  if (tbody) {
+    var rows = tbody.querySelectorAll('tr');
+    if (rows.length) {
+      var lastRow = rows[rows.length - 1];
+      var inp = lastRow.querySelector('input');
+      if (inp) inp.focus();
+    }
+  }
+}
+
+function flexFieldDelRow(sec, idx) {
+  if (!FLEX_FIELDS[sec]) return;
+  FLEX_FIELDS[sec].splice(idx, 1);
+  _saveFlexFields(sec);
+  flexFieldBuildGrid(sec);
+  renderFlexSection(sec);
+}
+
+function flexFieldsLoad(sec, fields) {
+  FLEX_FIELDS[sec] = fields || FLEX_FIELDS_DEFAULTS[sec].slice();
+  flexFieldBuildGrid(sec);
+  // Sync period label inputs from Period row
+  var periodRow = null;
+  var fs = FLEX_FIELDS[sec] || [];
+  for (var j = 0; j < fs.length; j++) {
+    if (fs[j].label === 'Period') { periodRow = fs[j]; break; }
+  }
+  if (sec === 'capacity' && periodRow) {
+    var capInp = document.getElementById('i-cap-period');
+    if (capInp) capInp.value = periodRow.value;
+  }
+  if (sec === 'fulfillment' && periodRow) {
+    var frInp = document.getElementById('i-fr-aug-period');
+    if (frInp) frInp.value = periodRow.value;
+  }
+}
+
+// Render the structured Capacity cards from FLEX_FIELDS.capacity label-value pairs
+function renderCapacityCards() {
+  var fields = FLEX_FIELDS.capacity || FLEX_FIELDS_DEFAULTS.capacity;
+  function fv(label) {
+    for (var i = 0; i < fields.length; i++) {
+      if (fields[i].label === label) return fields[i].value;
+    }
+    return '';
+  }
+  function setEl(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
+
+  setEl('d-cap-hc-total',  fv('Headcount'));
+  // Build MtM / YtY line from the two delta fields
+  var mtm = fv('HC MtM'), yty = fv('HC YtY');
+  var deltaStr = (mtm && yty) ? (mtm + '\u00a0|\u00a0' + yty) : (mtm || yty);
+  setEl('d-cap-hc-deltas', deltaStr);
+
+  setEl('d-cap-lcc',       fv('LCC Hires %'));
+  setEl('d-cap-lcc-delta', fv('LCC Delta'));
+  setEl('d-cap-lcc-note',  fv('LCC Note'));
+
+  setEl('d-cap-band-mix',  fv('Band Mix Score'));
+  setEl('d-cap-band-delta',fv('Band Mix Delta'));
+}
+
+function renderFlexSection(sec) {
+  // capacity has dedicated structured cards — skip generic grid for it
+  if (sec === 'capacity') return;
+  var container = document.getElementById('d-flex-' + sec);
+  if (!container) return;
+  var fields = FLEX_FIELDS[sec] || [];
+  // Filter out the Period row — it's shown in the section title
+  var display = fields.filter(function(f) {
+    return f.label.toLowerCase().indexOf('period') !== 0;
+  });
+  if (!display.length) { container.innerHTML = ''; return; }
+
+  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">';
+  display.forEach(function(f) {
+    // Detect percentage value for progress bar
+    var pct = parseFloat(String(f.value).replace('%','').trim());
+    var isPct = !isNaN(pct) && String(f.value).trim().indexOf('%') !== -1 && pct >= 0 && pct <= 100;
+    var barColor = isPct ? (pct >= 90 ? 'var(--s-green)' : pct >= 70 ? 'var(--s-amber)' : 'var(--s-red)') : '';
+    var bar = isPct
+      ? '<div class="prog-wrap" style="margin-top:6px"><div class="prog-track"><div class="prog-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div></div>'
+      : '';
+    html += '<div class="card card-accent-left" style="padding:14px 16px">'
+      + '<div class="kpi-label" style="margin-bottom:4px">' + escHtml(f.label) + '</div>'
+      + '<div class="kpi-value-xs" style="word-break:break-word">' + escHtml(f.value) + '</div>'
+      + bar
+      + '</div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+
 var FIELD_MAP = [
   ['i-cap-period',    null,            function(v){ var sp=document.getElementById('cap-period-label'); if(sp) sp.textContent=v; syncPeriodPicker('cap',v); }],
   ['i-cap-source',    null,            function(v){ var a=document.getElementById('d-cap-source'); if(a) a.textContent=v; var b=document.getElementById('d-cap-source2'); if(b) b.textContent=v.split('/')[0].trim(); }],
@@ -1788,6 +1972,10 @@ function applyInputs() {
   try { renderHiringFunnel(); } catch(ex) { console.error('renderHiringFunnel:', ex); }
   try { renderPPM(JSON.parse(document.getElementById('i-ppm-rows').value)); }
   catch(ex) { console.error('PPM JSON invalid:', ex); }
+  // Render flex sections on dashboard (workforce has dedicated structured cards, not a flex render)
+  try { renderCapacityCards(); } catch(ex) { console.error('renderCapacityCards:', ex); }
+  try { renderFlexSection('fulfillment'); } catch(ex) { console.error('renderFlexSection fulfillment:', ex); }
+
   var msg = document.getElementById('saved-msg');
   if (msg) { msg.style.display = 'block'; setTimeout(function(){ msg.style.display = 'none'; }, 2500); }
 }
@@ -1845,6 +2033,7 @@ function getSnapshot() {
   snap.history_capacity    = _loadSectionHistory('capacity');
   snap.history_fulfillment = _loadSectionHistory('fulfillment');
   snap.history_workforce   = _loadSectionHistory('workforce');
+  snap.pamWeekHistory = loadPamWeekHistory(); // full list across ALL months
   snap.ppmSnaps = _loadPpmSnaps();
   snap.hsSnaps  = _loadHsSnaps();
   var pamImg = document.getElementById('pam-photo-img');
@@ -1853,6 +2042,11 @@ function getSnapshot() {
   if (pamImg && pamImg.src && pamImg.src.indexOf('data:') === 0) snap.pamPhoto = pamImg.src;
   if (ppmImg && ppmImg.src && ppmImg.src.indexOf('data:') === 0) snap.ppmPhoto = ppmImg.src;
   if (hsImg  && hsImg.src  && hsImg.src.indexOf('data:')  === 0) snap.hsPhoto  = hsImg.src;
+  snap.flexFields = {
+    capacity:    FLEX_FIELDS.capacity    || FLEX_FIELDS_DEFAULTS.capacity,
+    fulfillment: FLEX_FIELDS.fulfillment || FLEX_FIELDS_DEFAULTS.fulfillment,
+    workforce:   FLEX_FIELDS.workforce   || FLEX_FIELDS_DEFAULTS.workforce
+  };
   return snap;
 }
 function exportStandalone() {
@@ -2148,10 +2342,15 @@ function _buildSectionEntry(label, sec) {
   // Capture grid JSON where applicable
   if (sec === 'capacity') {
     var hsTa = document.getElementById('i-hs-rows'); entry.hs = hsTa ? hsTa.value : '';
+    entry.flexFields = JSON.stringify(FLEX_FIELDS.capacity || FLEX_FIELDS_DEFAULTS.capacity);
+  }
+  if (sec === 'fulfillment') {
+    entry.flexFields = JSON.stringify(FLEX_FIELDS.fulfillment || FLEX_FIELDS_DEFAULTS.fulfillment);
   }
   if (sec === 'workforce') {
     entry.pam = document.getElementById('i-pam-rows').value;
     entry.ppm = document.getElementById('i-ppm-rows').value;
+    entry.flexFields = JSON.stringify(FLEX_FIELDS.workforce || FLEX_FIELDS_DEFAULTS.workforce);
   }
   return entry;
 }
@@ -2175,6 +2374,8 @@ function saveSnapshot() {
   ['capacity','fulfillment','workforce'].forEach(function(sec) {
     _upsertSectionSnapshot(_buildSectionEntry(label, sec), sec);
   });
+  // Refresh period buttons so the new period appears immediately
+  try { buildGlobalPeriodPicker(); } catch(ex) {}
   var el = document.getElementById('snap-confirm');
   if (el) { el.style.display = 'inline'; setTimeout(function(){ el.style.display = 'none'; }, 2500); }
 }
@@ -2187,6 +2388,8 @@ function saveMetricSnapshot(metricKey) {
     : new Date().toLocaleDateString('en-US', {month:'short', year:'numeric'});
   var sec = metricKey; // 'capacity' | 'fulfillment' | 'workforce'
   _upsertSectionSnapshot(_buildSectionEntry(label, sec), sec);
+  // Refresh period buttons
+  try { buildGlobalPeriodPicker(); } catch(ex) {}
   var confEl = document.getElementById('snap-confirm-' + metricKey);
   if (confEl) { confEl.style.display = 'inline'; setTimeout(function(){ confEl.style.display = 'none'; }, 2500); }
 }
@@ -2197,6 +2400,7 @@ function deleteSnapshot(idx) {
   saveHistory(h);
   if (_liveStash) restoreLive();
   renderTrends();
+  try { buildGlobalPeriodPicker(); } catch(ex) {}
 }
 
 function viewSnapshot(idx) {
@@ -2221,6 +2425,16 @@ function viewSnapshot(idx) {
   if (entry.pam) { document.getElementById('i-pam-rows').value = entry.pam; try { pamGridLoad(JSON.parse(entry.pam)); } catch(eg){} }
   if (entry.ppm) { document.getElementById('i-ppm-rows').value = entry.ppm; try { ppmGridLoad(JSON.parse(entry.ppm)); } catch(eg){} }
   if (entry.hs)  { var hsTaLoad = document.getElementById('i-hs-rows'); if(hsTaLoad) hsTaLoad.value = entry.hs; try { hsGridLoad(JSON.parse(entry.hs)); } catch(eg){} }
+  // Restore flex fields if present in this snapshot
+  if (entry.flexFields) {
+    try {
+      var ff = JSON.parse(entry.flexFields);
+      // Determine which section this entry came from — try all 3
+      ['capacity','fulfillment','workforce'].forEach(function(s) {
+        if (entry.flexFields && Array.isArray(ff)) { flexFieldsLoad(s, ff); }
+      });
+    } catch(eg){}
+  }
   applyInputs();
   var banner = document.getElementById('hist-banner');
   var bannerLabel = document.getElementById('hist-banner-label');
@@ -2233,7 +2447,7 @@ function viewSnapshot(idx) {
 function restoreLive() {
   if (!_liveStash) return;
   Object.keys(_liveStash).forEach(function(id){
-    if (id === '_pam' || id === '_ppm' || id === '_hs') return;
+    if (id === '_pam' || id === '_ppm' || id === '_hs' || id === '_flexFields') return;
     var el = document.getElementById(id); if (el) el.value = _liveStash[id];
   });
   document.getElementById('i-pam-rows').value = _liveStash._pam || '';
@@ -2243,6 +2457,12 @@ function restoreLive() {
   var hsTaRestore = document.getElementById('i-hs-rows');
   if (hsTaRestore) hsTaRestore.value = _liveStash._hs || '';
   try { if (typeof hsGridLoad === 'function') hsGridLoad(JSON.parse(_liveStash._hs || '[]')); } catch(eg){}
+  // Restore stashed flex fields
+  if (_liveStash._flexFields) {
+    ['capacity','fulfillment','workforce'].forEach(function(s) {
+      if (_liveStash._flexFields[s]) flexFieldsLoad(s, _liveStash._flexFields[s]);
+    });
+  }
   _liveStash = null;
   applyInputs();
   var banner = document.getElementById('hist-banner');
@@ -3761,51 +3981,98 @@ var SECTION_PERIOD_IDS = [
   { prefix:'util', labelId:'util-period-label', titleFn: function(m,y){ return 'Utilization \u2014 '+m+' '+y; } },
 ];
 
-function buildGlobalPeriodPicker() {
-  var mSel = document.getElementById('gp-month');
-  var ySel = document.getElementById('gp-year');
-  if (!mSel || mSel.options.length) return;
-  MONTH_FULL.forEach(function(m) {
-    var opt = document.createElement('option'); opt.value = m; opt.textContent = m; mSel.appendChild(opt);
+// ── Global period picker — data-aware button strip ────────────────────────────
+var MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var MONTH_FULL  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+// The currently active period string (e.g. "August 2026"), or '' for live
+var _currentPeriod = '';
+
+// Collect all unique period labels that have data in any store
+function _getDataPeriods() {
+  var seen = {};
+  var periods = [];
+  // Monthly snapshots
+  loadHistory().forEach(function(e) { if (e.label && !seen[e.label]) { seen[e.label] = true; periods.push(e.label); } });
+  // PAM weekly snapshots — derive month period from weekEnding date
+  loadPamWeekHistory().forEach(function(e) {
+    if (!e.weekEnding) return;
+    var d = new Date(e.weekEnding + 'T00:00:00');
+    if (isNaN(d)) return;
+    var lbl = MONTH_FULL[d.getMonth()] + ' ' + d.getFullYear();
+    if (!seen[lbl]) { seen[lbl] = true; periods.push(lbl); }
   });
-  var cy = new Date().getFullYear();
-  for (var y = cy - 3; y <= cy + 2; y++) {
-    var opt = document.createElement('option'); opt.value = y; opt.textContent = y; ySel.appendChild(opt);
+  // Sort by date order
+  periods.sort(function(a, b) {
+    return (parseLabelOrder(a) || 0) - (parseLabelOrder(b) || 0);
+  });
+  return periods;
+}
+
+// Render the period button strip — call whenever the data changes
+function buildGlobalPeriodPicker() {
+  var container = document.getElementById('gp-period-btns');
+  if (!container) return;
+  container.innerHTML = '';
+  var periods = _getDataPeriods();
+
+  // "Live" button always shown first
+  var liveBtn = document.createElement('button');
+  liveBtn.textContent = '\u2022 Live';
+  var isLive = _currentPeriod === '';
+  liveBtn.style.cssText = 'font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;cursor:pointer;border:1.5px solid '
+    + (isLive ? 'var(--tp)' : 'var(--border)')
+    + ';background:' + (isLive ? 'var(--tp)' : 'var(--card)')
+    + ';color:' + (isLive ? '#fff' : 'var(--text2)')
+    + ';font-family:inherit;transition:background .15s,border-color .15s';
+  liveBtn.addEventListener('click', function() { globalPeriodReset(); });
+  container.appendChild(liveBtn);
+
+  // One button per data period
+  periods.forEach(function(period) {
+    var btn = document.createElement('button');
+    var isActive = period === _currentPeriod;
+    // Short label: "Aug '26"
+    var parts = period.match(/([A-Za-z]+)\s+(\d{4})/);
+    btn.textContent = parts ? parts[1].slice(0,3) + " '" + parts[2].slice(2) : period;
+    btn.title = period;
+    btn.style.cssText = 'font-size:11px;font-weight:' + (isActive ? '700' : '600') + ';padding:3px 10px;border-radius:12px;cursor:pointer;border:1.5px solid '
+      + (isActive ? 'var(--tp)' : 'var(--border)')
+      + ';background:' + (isActive ? 'var(--tp)' : 'var(--card)')
+      + ';color:' + (isActive ? '#fff' : 'var(--text2)')
+      + ';font-family:inherit;transition:background .15s,border-color .15s';
+    (function(p) { btn.addEventListener('click', function() { globalPeriodChange(p); }); })(period);
+    container.appendChild(btn);
+  });
+
+  // If no data yet show placeholder
+  if (!periods.length) {
+    var ph = document.createElement('span');
+    ph.style.cssText = 'font-size:11px;color:var(--text3);font-style:italic';
+    ph.textContent = 'No snapshots yet \u2014 save one to see periods here';
+    container.appendChild(ph);
   }
 }
 
 function initGlobalPeriodPicker() {
+  _currentPeriod = '';
   buildGlobalPeriodPicker();
-  // Seed from current cap-period-label value
-  var capLabel = document.getElementById('cap-period-label');
-  var label = capLabel ? capLabel.textContent.trim() : '';
-  if (label) {
-    var parts = label.match(/([A-Za-z]+)\s+(\d{4})/);
-    if (parts) {
-      var mSel = document.getElementById('gp-month');
-      var ySel = document.getElementById('gp-year');
-      if (mSel) mSel.value = parts[1];
-      if (ySel) ySel.value = parts[2];
-    }
-  }
-  updateGlobalPeriodBadge();
+  updateGlobalPeriodBadge(false);
 }
 
-function globalPeriodChange() {
-  var mSel = document.getElementById('gp-month');
-  var ySel = document.getElementById('gp-year');
-  if (!mSel || !ySel) return;
-  var month = mSel.value, year = ySel.value;
-  var periodStr = month + ' ' + year;
+// Accept a period string directly (called by button clicks)
+function globalPeriodChange(periodStr) {
+  _currentPeriod = periodStr;
+  var parts = periodStr.match(/([A-Za-z]+)\s+(\d{4})/);
+  var month = parts ? parts[1] : '';
+  var year  = parts ? parts[2] : '';
 
   // Update ALL section period labels
   SECTION_PERIOD_IDS.forEach(function(s) {
     var sp = document.getElementById(s.labelId);
     if (sp) sp.textContent = periodStr;
-    // Sync individual section pickers
-    syncPeriodPicker(s.prefix, periodStr);
   });
-  // Also sync Hiring Speed period label
+  // Hiring Speed period label
   var hsPeriod = document.getElementById('d-hs-period');
   if (hsPeriod) hsPeriod.textContent = periodStr;
 
@@ -3820,170 +4087,93 @@ function globalPeriodChange() {
   // Try to find a matching monthly snapshot and load it
   var h = loadHistory();
   var match = null;
-  var matchIdx = -1;
   var periodLower = periodStr.toLowerCase();
   var monthShort = month.slice(0,3).toLowerCase();
   for (var i = 0; i < h.length; i++) {
     var lbl = (h[i].label || '').toLowerCase();
-    // Match "August 2026" or "Aug '26" or "Aug 26"
     if (lbl === periodLower ||
-        lbl.indexOf(monthShort) === 0 && lbl.indexOf(year.slice(2)) >= 0) {
-      match = h[i]; matchIdx = i; break;
+        (lbl.indexOf(monthShort) === 0 && year && lbl.indexOf(year.slice(2)) >= 0)) {
+      match = h[i]; break;
     }
   }
 
   if (match && match.fields) {
-    // Stash live state if not already stashed
     if (!_liveStash) {
       _liveStash = {};
       FIELD_MAP.forEach(function(e){ var inp=document.getElementById(e[0]); if(inp) _liveStash[e[0]]=inp.value; });
       _liveStash._pam = document.getElementById('i-pam-rows').value;
       _liveStash._ppm = document.getElementById('i-ppm-rows').value;
+      _liveStash._flexFields = {
+        capacity:    (FLEX_FIELDS.capacity || []).slice(),
+        fulfillment: (FLEX_FIELDS.fulfillment || []).slice(),
+        workforce:   (FLEX_FIELDS.workforce || []).slice()
+      };
     }
-    // Load snapshot fields
     Object.keys(match.fields).forEach(function(id){
       var el = document.getElementById(id);
-      // Don't overwrite period labels — we just set those from the picker
       if (id === 'i-cap-period' || id === 'i-fr-aug-period') return;
       if (el) el.value = match.fields[id];
     });
     if (match.pam) { document.getElementById('i-pam-rows').value = match.pam; try { pamGridLoad(JSON.parse(match.pam)); } catch(eg){} }
     if (match.ppm) { document.getElementById('i-ppm-rows').value = match.ppm; try { ppmGridLoad(JSON.parse(match.ppm)); } catch(eg){} }
+    if (match.flexFields) { try { var gff = JSON.parse(match.flexFields); if (Array.isArray(gff)) { flexFieldsLoad('capacity', gff); flexFieldsLoad('fulfillment', gff); flexFieldsLoad('workforce', gff); } } catch(eg){} }
     applyInputs();
-    // Show historical banner
     var banner = document.getElementById('hist-banner');
     var bannerLabel = document.getElementById('hist-banner-label');
     if (banner) banner.style.display = 'flex';
     if (bannerLabel) bannerLabel.textContent = match.label;
     updateGlobalPeriodBadge(true);
   } else {
-    // No snapshot — just update labels, keep live data
     updateGlobalPeriodBadge(false);
   }
+
+  // Refresh button strip to reflect the new active period
+  buildGlobalPeriodPicker();
+
+  // Refresh PAM weekly snapshots to show only those for the selected month
+  try {
+    var pamMonthSnaps = loadPamWeekHistoryForCurrentMonth();
+    if (pamMonthSnaps.length) {
+      openPamSnapPanel(pamMonthSnaps[pamMonthSnaps.length - 1], pamMonthSnaps, pamMonthSnaps.length - 1);
+    } else {
+      renderPamWeekTags(pamMonthSnaps, '');
+      var pamPanel = document.getElementById('pam-snap-panel');
+      if (pamPanel) pamPanel.style.display = 'none';
+    }
+  } catch(ex) {}
 }
 
 function updateGlobalPeriodBadge(hasSnapshot) {
   var snapBadge = document.getElementById('gp-snap-badge');
   var liveBadge = document.getElementById('gp-live-badge');
-  // Check if a snapshot matches the current selection
-  if (hasSnapshot === undefined) {
-    var mSel = document.getElementById('gp-month');
-    var ySel = document.getElementById('gp-year');
-    if (!mSel || !ySel) return;
-    var h = loadHistory();
-    var periodStr = mSel.value + ' ' + ySel.value;
-    var monthShort = mSel.value.slice(0,3).toLowerCase();
-    var year = ySel.value;
-    hasSnapshot = h.some(function(e){
-      var lbl = (e.label||'').toLowerCase();
-      return lbl === periodStr.toLowerCase() ||
-             (lbl.indexOf(monthShort) === 0 && lbl.indexOf(year.slice(2)) >= 0);
-    });
-  }
   if (snapBadge) snapBadge.className = 'global-period-snap-badge' + (hasSnapshot ? ' show' : '');
-  if (liveBadge) liveBadge.style.display = hasSnapshot ? 'none' : 'inline-block';
+  if (liveBadge) liveBadge.style.display = (_currentPeriod === '') ? 'inline-block' : 'none';
 }
 
 function globalPeriodReset() {
-  // Reset to current live data
+  _currentPeriod = '';
   if (_liveStash) restoreLive();
-  // Reset picker to current date / cap-period value
-  initGlobalPeriodPicker();
   var banner = document.getElementById('hist-banner');
   if (banner) banner.style.display = 'none';
+  buildGlobalPeriodPicker();
   updateGlobalPeriodBadge(false);
-}
-
-// ── Period Picker helpers ─────────────────────────────────────────────────────
-var MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-var MONTH_FULL  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-// Sections that have period pickers: id prefix -> title template
-var PERIOD_SECTIONS = {
-  cap:  function(m,y){ return 'Capacity Management \u2014 ' + m + ' ' + y; },
-  ful:  function(m,y){ return 'Fulfillment Management \u2014 ' + m + ' ' + y; },
-  wfm:  function(m,y){ return 'Workforce Performance \u2014 ' + m + ' ' + y; },
-  di:   function(m,y){ return 'DI Issues \u2014 ' + m + ' ' + y; },
-  ppm:  function(m,y){ return 'PPM \u2014 ' + m + ' ' + y; },
-  util: function(m,y){ return 'Utilization \u2014 ' + m + ' ' + y; },
-};
-
-function buildPeriodPicker(prefix) {
-  var mSel = document.getElementById('pp-'+prefix+'-month');
-  var ySel = document.getElementById('pp-'+prefix+'-year');
-  if (!mSel || !ySel) return;
-  // Build months
-  if (!mSel.options.length) {
-    MONTH_FULL.forEach(function(m, i) {
-      var opt = document.createElement('option');
-      opt.value = m;
-      opt.textContent = m;
-      mSel.appendChild(opt);
-    });
-  }
-  // Build years (current-2 to current+2)
-  if (!ySel.options.length) {
-    var cy = new Date().getFullYear();
-    for (var y = cy - 2; y <= cy + 2; y++) {
-      var opt = document.createElement('option');
-      opt.value = y;
-      opt.textContent = y;
-      ySel.appendChild(opt);
+  // Refresh PAM weekly snapshots for live (today's month)
+  try {
+    var pamMonthSnaps = loadPamWeekHistoryForCurrentMonth();
+    if (pamMonthSnaps.length) {
+      openPamSnapPanel(pamMonthSnaps[pamMonthSnaps.length - 1], pamMonthSnaps, pamMonthSnaps.length - 1);
+    } else {
+      renderPamWeekTags(pamMonthSnaps, '');
+      var pamPanel = document.getElementById('pam-snap-panel');
+      if (pamPanel) pamPanel.style.display = 'none';
     }
-  }
+  } catch(ex) {}
 }
 
-function syncPeriodPicker(prefix, label) {
-  buildPeriodPicker(prefix);
-  var mSel = document.getElementById('pp-'+prefix+'-month');
-  var ySel = document.getElementById('pp-'+prefix+'-year');
-  if (!mSel || !ySel || !label) return;
-  // Parse "Month Year" or "Month 'YY"
-  var s = label.trim();
-  var m2 = s.match(/([A-Za-z]+)\s+'?(\d{2,4})/);
-  if (m2) {
-    var mName = m2[1]; // e.g. "August"
-    var yr = parseInt(m2[2], 10);
-    if (yr < 100) yr += (yr >= 70 ? 1900 : 2000);
-    mSel.value = mName;
-    ySel.value = yr;
-  }
-}
-
-function onPeriodPickerChange(prefix) {
-  var mSel = document.getElementById('pp-'+prefix+'-month');
-  var ySel = document.getElementById('pp-'+prefix+'-year');
-  if (!mSel || !ySel) return;
-  var monthStr = mSel.value;
-  var yearStr  = ySel.value;
-  var periodStr = monthStr + ' ' + yearStr;
-  // Update the label span
-  var sp = document.getElementById(prefix+'-period-label');
-  if (sp) sp.textContent = periodStr;
-  // For capacity: also sync the inputs field and section sub-title
-  if (prefix === 'cap') {
-    var inp = document.getElementById('i-cap-period');
-    if (inp) inp.value = periodStr;
-    // Update the Hiring Metrics period badge
-    var hmp = document.getElementById('d-hm-period');
-    // leave hm-period to its own input
-  }
-  if (prefix === 'ful') {
-    var inp = document.getElementById('i-fr-aug-period');
-    if (inp) inp.value = periodStr;
-    var sp2 = document.getElementById('d-fr-aug-period');
-    if (sp2) sp2.textContent = periodStr;
-  }
-}
-
-function initAllPeriodPickers() {
-  // Init with current values from their label spans
-  Object.keys(PERIOD_SECTIONS).forEach(function(prefix) {
-    buildPeriodPicker(prefix);
-    var sp = document.getElementById(prefix + '-period-label');
-    if (sp) syncPeriodPicker(prefix, sp.textContent);
-  });
-}
+// No-op stubs kept so any remaining references don't throw
+function syncPeriodPicker(prefix, label) {}
+function onPeriodPickerChange(prefix) {}
+function initAllPeriodPickers() {}
 
 // ── PAM Weekly Snapshot ───────────────────────────────────────────────────────
 var PAM_WEEK_STORAGE_KEY = 'pam_week_history';
@@ -4001,6 +4191,39 @@ function loadPamWeekHistory() {
 
 function savePamWeekHistory(h) {
   try { localStorage.setItem(PAM_WEEK_STORAGE_KEY, JSON.stringify(h)); } catch(e) {}
+}
+
+// Returns the month key (e.g. "2026-08") for a weekEnding date string ("2026-08-14")
+function _pamWeekMonthKey(dateStr) {
+  if (!dateStr || dateStr.length < 7) return '';
+  return dateStr.slice(0, 7); // "YYYY-MM"
+}
+
+// Returns the current viewing period month key (e.g. "2026-08") from _currentPeriod.
+// Falls back to today's month when in live mode.
+function _getCurrentViewMonthKey() {
+  var period = _currentPeriod;
+  if (!period) {
+    // Live mode — use today's month
+    var now = new Date();
+    return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  }
+  var parts = period.match(/([A-Za-z]+)\s+(\d{4})/);
+  if (!parts) return '';
+  var mIdx = MONTH_FULL.indexOf(parts[1]);
+  if (mIdx < 0) mIdx = MONTH_SHORT.indexOf(parts[1].slice(0,3));
+  if (mIdx < 0) return '';
+  return parts[2] + '-' + String(mIdx + 1).padStart(2, '0');
+}
+
+// Returns only the PAM weekly snapshots for the currently viewed month
+function loadPamWeekHistoryForCurrentMonth() {
+  var all = loadPamWeekHistory();
+  var monthKey = _getCurrentViewMonthKey();
+  if (!monthKey) return all; // no filter if picker not ready
+  return all.filter(function(e) {
+    return _pamWeekMonthKey(e.weekEnding) === monthKey;
+  });
 }
 
 function savePamWeekSnapshot() {
@@ -4036,20 +4259,23 @@ function savePamWeekSnapshot() {
     hp:      (grandRow && grandRow.hp)      ? grandRow.hp      : (hpEl      ? hpEl.textContent.trim()      : ''),
     jrs:     (grandRow && grandRow.jrs)     ? grandRow.jrs     : (jrsEl     ? jrsEl.textContent.trim()     : ''),
     rows: pamRows,
-  };;
+  };
 
   var h = loadPamWeekHistory();
-  // Upsert by weekEnding date
+  // Upsert by weekEnding date (across all months — full store is always updated)
   var existIdx = -1;
   for (var i = 0; i < h.length; i++) {
     if (h[i].weekEnding === dateVal) { existIdx = i; break; }
   }
   if (existIdx >= 0) h[existIdx] = entry; else h.push(entry);
-  // Sort by date, keep latest 12
+  // Sort by date — no hard cap: each month can have its own 4+ weekly snapshots
   h.sort(function(a,b){ return a.weekEnding < b.weekEnding ? -1 : a.weekEnding > b.weekEnding ? 1 : 0; });
-  if (h.length > 12) h = h.slice(h.length - 12);
   savePamWeekHistory(h);
-  renderPamWeekTags(h, dateVal);
+  // Refresh period buttons (new month may have appeared)
+  try { buildGlobalPeriodPicker(); } catch(ex) {}
+  // Render only snapshots for the currently viewed month
+  var monthSnaps = loadPamWeekHistoryForCurrentMonth();
+  renderPamWeekTags(monthSnaps, dateVal);
   var conf = document.getElementById('pam-snap-confirm');
   if (conf) { conf.style.display = 'inline'; setTimeout(function(){ conf.style.display = 'none'; }, 2000); }
 }
@@ -4194,11 +4420,14 @@ function openPamSnapPanel(entry, history, snapIdx) {
 function closePamSnapPanel() {
   var panel = document.getElementById('pam-snap-panel');
   if (panel) panel.style.display = 'none';
-  renderPamWeekTags(loadPamWeekHistory(), '');
+  renderPamWeekTags(loadPamWeekHistoryForCurrentMonth(), '');
 }
 function updatePamWeekCount(n) {
   var el = document.getElementById('pam-week-count');
-  if (el) el.textContent = n + ' weekly snapshot' + (n !== 1 ? 's' : '') + ' saved.';
+  if (!el) return;
+  var allCount = loadPamWeekHistory().length;
+  el.textContent = n + ' weekly snapshot' + (n !== 1 ? 's' : '') + ' for this period'
+    + (allCount > n ? ' (' + allCount + ' total across all periods).' : '.');
 }
 
 function loadPamWeekView(dateStr) {
@@ -4212,14 +4441,23 @@ function loadPamWeekView(dateStr) {
 }
 
 function deletePamWeekSnapshot(idx) {
-  var h = loadPamWeekHistory();
-  h.splice(idx, 1);
-  savePamWeekHistory(h);
-  // If snapshots remain, show the new latest; otherwise just re-render tags
-  if (h.length) {
-    openPamSnapPanel(h[h.length - 1], h, h.length - 1);
+  // idx is an index into the *filtered* (month) list — find the matching entry by weekEnding
+  var filtered = loadPamWeekHistoryForCurrentMonth();
+  var targetEntry = filtered[idx];
+  if (!targetEntry) return;
+  var all = loadPamWeekHistory();
+  var allIdx = -1;
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].weekEnding === targetEntry.weekEnding) { allIdx = i; break; }
+  }
+  if (allIdx >= 0) all.splice(allIdx, 1);
+  savePamWeekHistory(all);
+  // Re-render using the updated filtered list
+  filtered = loadPamWeekHistoryForCurrentMonth();
+  if (filtered.length) {
+    openPamSnapPanel(filtered[filtered.length - 1], filtered, filtered.length - 1);
   } else {
-    renderPamWeekTags(h, '');
+    renderPamWeekTags(filtered, '');
     var panel = document.getElementById('pam-snap-panel');
     if (panel) panel.style.display = 'none';
   }
@@ -4232,9 +4470,10 @@ function initPamWeekSnapshots() {
     var today = new Date();
     dateEl.value = today.toISOString().slice(0, 10);
   }
-  var h = loadPamWeekHistory();
+  // Only show snapshots for the currently viewed month period
+  var h = loadPamWeekHistoryForCurrentMonth();
   if (h && h.length) {
-    // Auto-expand the most recent snapshot
+    // Auto-expand the most recent snapshot for this month
     openPamSnapPanel(h[h.length - 1], h, h.length - 1);
   } else {
     renderPamWeekTags(h, '');
@@ -4246,6 +4485,25 @@ function initPamWeekSnapshots() {
   try { if (!savedTheme) savedTheme = localStorage.getItem('dash_theme'); } catch(e) {}
   // Default to IBM Blue
   setTheme(savedTheme && THEMES[savedTheme] ? savedTheme : 'ibm', null);
+
+  // Load flex fields (localStorage → preloaded → defaults)
+  _loadFlexFields();
+  if (pre && pre.flexFields) {
+    ['capacity','fulfillment','workforce'].forEach(function(s) {
+      if (pre.flexFields[s] && Array.isArray(pre.flexFields[s]) && pre.flexFields[s].length) {
+        // Only override if localStorage has no user data
+        var stored = null;
+        try { var sv = localStorage.getItem('flex_fields_' + s); if (sv) stored = JSON.parse(sv); } catch(e){}
+        if (!stored || !stored.length) {
+          FLEX_FIELDS[s] = pre.flexFields[s];
+        }
+      }
+    });
+  }
+  // Build the edit-inputs grids
+  flexFieldBuildGrid('capacity');
+  flexFieldBuildGrid('fulfillment');
+  flexFieldBuildGrid('workforce');
 
   if (pre && pre.fields) {
     Object.keys(pre.fields).forEach(function(id){ var el=document.getElementById(id); if(el) el.value=pre.fields[id]; });
@@ -4290,7 +4548,7 @@ function initPamWeekSnapshots() {
   try { _migrateHistory(); } catch(e) { console.error('_migrateHistory failed:', e); }
   try { applyInputs(); } catch(e) { console.error('applyInputs failed:', e); }
   try { buildThemeCards(); } catch(e) { console.error('buildThemeCards failed:', e); }
-  try { initAllPeriodPickers(); } catch(e) { console.error('initAllPeriodPickers failed:', e); }
+  try { initAllPeriodPickers(); } catch(e) {} // no-op, kept for safety
   try { initGlobalPeriodPicker(); } catch(e) { console.error('initGlobalPeriodPicker failed:', e); }
   try { initPamWeekSnapshots(); } catch(e) { console.error('initPamWeekSnapshots failed:', e); }
 })();
