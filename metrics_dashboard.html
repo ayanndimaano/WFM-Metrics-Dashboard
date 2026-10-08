@@ -2275,6 +2275,9 @@ function loadHistory() {
         if (k === 'fields') {
           if (!merged[lbl].fields) merged[lbl].fields = {};
           Object.keys(entry.fields).forEach(function(id) { merged[lbl].fields[id] = entry.fields[id]; });
+        } else if (k === 'flexFields') {
+          // Store flex fields per-section so they don't overwrite each other
+          merged[lbl]['flexFields_' + sec] = entry[k];
         } else {
           merged[lbl][k] = entry[k];
         }
@@ -2425,16 +2428,11 @@ function viewSnapshot(idx) {
   if (entry.pam) { document.getElementById('i-pam-rows').value = entry.pam; try { pamGridLoad(JSON.parse(entry.pam)); } catch(eg){} }
   if (entry.ppm) { document.getElementById('i-ppm-rows').value = entry.ppm; try { ppmGridLoad(JSON.parse(entry.ppm)); } catch(eg){} }
   if (entry.hs)  { var hsTaLoad = document.getElementById('i-hs-rows'); if(hsTaLoad) hsTaLoad.value = entry.hs; try { hsGridLoad(JSON.parse(entry.hs)); } catch(eg){} }
-  // Restore flex fields if present in this snapshot
-  if (entry.flexFields) {
-    try {
-      var ff = JSON.parse(entry.flexFields);
-      // Determine which section this entry came from — try all 3
-      ['capacity','fulfillment','workforce'].forEach(function(s) {
-        if (entry.flexFields && Array.isArray(ff)) { flexFieldsLoad(s, ff); }
-      });
-    } catch(eg){}
-  }
+  // Restore per-section flex fields
+  ['capacity','fulfillment','workforce'].forEach(function(s) {
+    var raw = entry['flexFields_' + s] || (s === 'capacity' ? entry.flexFields : null);
+    if (raw) { try { var ff = JSON.parse(raw); if (Array.isArray(ff)) flexFieldsLoad(s, ff); } catch(eg){} }
+  });
   applyInputs();
   var banner = document.getElementById('hist-banner');
   var bannerLabel = document.getElementById('hist-banner-label');
@@ -4116,7 +4114,11 @@ function globalPeriodChange(periodStr) {
     });
     if (match.pam) { document.getElementById('i-pam-rows').value = match.pam; try { pamGridLoad(JSON.parse(match.pam)); } catch(eg){} }
     if (match.ppm) { document.getElementById('i-ppm-rows').value = match.ppm; try { ppmGridLoad(JSON.parse(match.ppm)); } catch(eg){} }
-    if (match.flexFields) { try { var gff = JSON.parse(match.flexFields); if (Array.isArray(gff)) { flexFieldsLoad('capacity', gff); flexFieldsLoad('fulfillment', gff); flexFieldsLoad('workforce', gff); } } catch(eg){} }
+    // Restore per-section flex fields from section-scoped keys
+    ['capacity','fulfillment','workforce'].forEach(function(s) {
+      var raw = match['flexFields_' + s] || match.flexFields; // fallback to old single key
+      if (raw) { try { var ff = JSON.parse(raw); if (Array.isArray(ff)) flexFieldsLoad(s, ff); } catch(eg){} }
+    });
     applyInputs();
     var banner = document.getElementById('hist-banner');
     var bannerLabel = document.getElementById('hist-banner-label');
