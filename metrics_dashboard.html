@@ -981,19 +981,29 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
       <div id="theme-cards" style="display:flex;gap:10px;flex-wrap:wrap"></div>
     </div>
 
-    <div style="font-size:15px;font-weight:600;margin-bottom:14px;color:var(--text)">Edit Dashboard Inputs</div>
+    <!-- Monthly tab strip -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">&#128197; Select Month to Edit</div>
+      <div id="edit-month-tabs" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"></div>
+      <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <button class="btn-primary" style="gap:5px" onclick="saveMonthData()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save <span id="save-month-label">Month</span>
+        </button>
+        <button class="btn-secondary" style="gap:5px;color:var(--s-red);border-color:var(--s-red)" onclick="clearMonthData()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          Clear <span id="clear-month-label">Month</span>
+        </button>
+        <span id="month-save-confirm" style="display:none;color:var(--s-green);font-size:12px;font-weight:600">&#10003; Saved to dashboard!</span>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:var(--text2)">Fill in the data below for <strong id="editing-month-label">the selected month</strong>, then click Save.</div>
 
     <!-- 1. Capacity Management -->
     <div style="margin-bottom:24px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--tp)">
         <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tp)">1. Capacity Management</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn-primary" style="font-size:11px;padding:4px 12px;gap:5px" onclick="saveMetricSnapshot('capacity')">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Save Snapshot
-          </button>
-          <span id="snap-confirm-capacity" style="display:none;color:var(--s-green);font-size:11px;font-weight:600">&#10003; Saved!</span>
-        </div>
       </div>
       <!-- Flex field editor — Capacity -->
       <div class="input-section" style="margin-bottom:12px">
@@ -1092,15 +1102,8 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
 
     <!-- 2. Fulfillment Management -->
     <div style="margin-bottom:24px">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--tp)">
+      <div style="margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--tp)">
         <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tp)">2. Fulfillment Management</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn-primary" style="font-size:11px;padding:4px 12px;gap:5px" onclick="saveMetricSnapshot('fulfillment')">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Save Snapshot
-          </button>
-          <span id="snap-confirm-fulfillment" style="display:none;color:var(--s-green);font-size:11px;font-weight:600">&#10003; Saved!</span>
-        </div>
       </div>
       <!-- Flex field editor — Fulfillment -->
       <div class="input-section" style="margin-bottom:12px">
@@ -1124,15 +1127,8 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
 
     <!-- 3. Workforce Performance -->
     <div style="margin-bottom:24px">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--tp)">
+      <div style="margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--tp)">
         <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tp)">3. Workforce Performance</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn-primary" style="font-size:11px;padding:4px 12px;gap:5px" onclick="saveMetricSnapshot('workforce')">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Save Snapshot
-          </button>
-          <span id="snap-confirm-workforce" style="display:none;color:var(--s-green);font-size:11px;font-weight:600">&#10003; Saved!</span>
-        </div>
       </div>
       <!-- Flex field editor — Workforce -->
       <div class="input-section" style="margin-bottom:12px">
@@ -1683,6 +1679,179 @@ function renderHiringFunnel() {
     '</svg>';
 }
 
+
+// ── Monthly Tab System ────────────────────────────────────────────────────────
+var MONTH_TABS = [
+  {key:'2026-06', label:'June 2026',     short:"Jun '26"},
+  {key:'2026-07', label:'July 2026',     short:"Jul '26"},
+  {key:'2026-08', label:'August 2026',   short:"Aug '26"},
+  {key:'2026-09', label:'September 2026',short:"Sep '26"},
+  {key:'2026-10', label:'October 2026',  short:"Oct '26"},
+  {key:'2026-11', label:'November 2026', short:"Nov '26"},
+  {key:'2026-12', label:'December 2026', short:"Dec '26"}
+];
+var _activeEditMonth = MONTH_TABS[0].key; // which month is open in Edit Inputs
+
+function _monthStorageKey(key) { return 'dash_month_' + key; }
+
+// Collect all FIELD_MAP input IDs for saving
+function _getAllFieldIds() {
+  var ids = [];
+  FIELD_MAP.forEach(function(e){ ids.push(e[0]); });
+  return ids;
+}
+
+// Save all current inputs into the active month's localStorage slot
+function saveMonthData() {
+  var key = _activeEditMonth;
+  // Sync grids to hidden textareas first
+  pamGridSyncBeforeApply();
+  ppmGridSyncBeforeApply();
+  if (typeof hsGridSyncBeforeApply === 'function') hsGridSyncBeforeApply();
+  flexFieldsSync('capacity');
+  flexFieldsSync('fulfillment');
+  flexFieldsSync('workforce');
+
+  var data = {
+    fields: {},
+    pam: document.getElementById('i-pam-rows').value,
+    ppm: document.getElementById('i-ppm-rows').value,
+    hs:  (document.getElementById('i-hs-rows') || {}).value || '',
+    flexFields: {
+      capacity:    JSON.parse(JSON.stringify(FLEX_FIELDS.capacity    || [])),
+      fulfillment: JSON.parse(JSON.stringify(FLEX_FIELDS.fulfillment || [])),
+      workforce:   JSON.parse(JSON.stringify(FLEX_FIELDS.workforce   || []))
+    }
+  };
+  _getAllFieldIds().forEach(function(id){
+    var el = document.getElementById(id); if (el) data.fields[id] = el.value;
+  });
+  // Photos
+  var pamImg = document.getElementById('pam-photo-img');
+  var ppmImg = document.getElementById('ppm-photo-img');
+  var hsImg  = document.getElementById('hs-photo-img');
+  if (pamImg && pamImg.src && pamImg.src.indexOf('data:') === 0) data.pamPhoto = pamImg.src;
+  if (ppmImg && ppmImg.src && ppmImg.src.indexOf('data:') === 0) data.ppmPhoto = ppmImg.src;
+  if (hsImg  && hsImg.src  && hsImg.src.indexOf('data:')  === 0) data.hsPhoto  = hsImg.src;
+
+  try { localStorage.setItem(_monthStorageKey(key), JSON.stringify(data)); } catch(e){ alert('Save failed — localStorage may be full.'); return; }
+
+  // Refresh dashboard period buttons and load this month on dashboard
+  buildGlobalPeriodPicker();
+  var tab = MONTH_TABS.filter(function(t){ return t.key === key; })[0];
+  if (tab) globalPeriodChange(tab.label);
+
+  // Flash confirm
+  var conf = document.getElementById('month-save-confirm');
+  if (conf) { conf.style.display = 'inline'; setTimeout(function(){ conf.style.display = 'none'; }, 2500); }
+}
+
+// Load a month's saved data into all input fields
+function loadMonthData(key) {
+  var raw = null;
+  try { raw = localStorage.getItem(_monthStorageKey(key)); } catch(e){}
+  if (!raw) {
+    // Clear all inputs for a blank month
+    _getAllFieldIds().forEach(function(id){
+      var el = document.getElementById(id); if (el) el.value = '';
+    });
+    // Clear flex fields to empty
+    ['capacity','fulfillment','workforce'].forEach(function(s){
+      flexFieldsLoad(s, []);
+    });
+    var pamTa = document.getElementById('i-pam-rows');
+    if (pamTa) { pamTa.value = '[]'; pamGridLoad([]); }
+    var ppmTa = document.getElementById('i-ppm-rows');
+    if (ppmTa) { ppmTa.value = '[]'; ppmGridLoad([]); }
+    var hsTa = document.getElementById('i-hs-rows');
+    if (hsTa) { hsTa.value = '[]'; if (typeof hsGridLoad === 'function') hsGridLoad([]); }
+    setPhoto('pam', null); setPhoto('ppm', null); setPhoto('hs', null);
+    return;
+  }
+  var data = {};
+  try { data = JSON.parse(raw); } catch(e){ return; }
+
+  if (data.fields) {
+    Object.keys(data.fields).forEach(function(id){
+      var el = document.getElementById(id); if (el) el.value = data.fields[id];
+    });
+  }
+  if (data.pam) { document.getElementById('i-pam-rows').value = data.pam; try { pamGridLoad(JSON.parse(data.pam)); } catch(eg){} }
+  if (data.ppm) { document.getElementById('i-ppm-rows').value = data.ppm; try { ppmGridLoad(JSON.parse(data.ppm)); } catch(eg){} }
+  if (data.hs)  { var hsTaLoad = document.getElementById('i-hs-rows'); if(hsTaLoad) hsTaLoad.value = data.hs; try { if(typeof hsGridLoad==='function') hsGridLoad(JSON.parse(data.hs)); } catch(eg){} }
+  if (data.flexFields) {
+    ['capacity','fulfillment','workforce'].forEach(function(s){
+      if (data.flexFields[s]) flexFieldsLoad(s, data.flexFields[s]);
+    });
+  }
+  if (data.pamPhoto) setPhoto('pam', data.pamPhoto);
+  if (data.ppmPhoto) setPhoto('ppm', data.ppmPhoto);
+  if (data.hsPhoto)  setPhoto('hs',  data.hsPhoto);
+}
+
+// Clear the active month's data
+function clearMonthData() {
+  var tab = MONTH_TABS.filter(function(t){ return t.key === _activeEditMonth; })[0];
+  if (!confirm('Clear all data for ' + (tab ? tab.label : _activeEditMonth) + '? This cannot be undone.')) return;
+  try { localStorage.removeItem(_monthStorageKey(_activeEditMonth)); } catch(e){}
+  loadMonthData(_activeEditMonth); // clears inputs
+  buildGlobalPeriodPicker();
+}
+
+// Switch active edit month tab
+function switchEditMonth(key) {
+  _activeEditMonth = key;
+  // Update tab styles
+  document.querySelectorAll('.edit-month-tab').forEach(function(btn){
+    var isActive = btn.getAttribute('data-month-key') === key;
+    btn.style.background   = isActive ? 'var(--tp)' : 'var(--card)';
+    btn.style.color        = isActive ? '#fff' : 'var(--text2)';
+    btn.style.borderColor  = isActive ? 'var(--tp)' : 'var(--border)';
+    btn.style.fontWeight   = isActive ? '700' : '600';
+  });
+  // Update labels
+  var tab = MONTH_TABS.filter(function(t){ return t.key === key; })[0];
+  var lbl = tab ? tab.label : key;
+  var saveLbl = document.getElementById('save-month-label');
+  var clearLbl = document.getElementById('clear-month-label');
+  var editLbl  = document.getElementById('editing-month-label');
+  if (saveLbl)  saveLbl.textContent  = lbl;
+  if (clearLbl) clearLbl.textContent = lbl;
+  if (editLbl)  editLbl.textContent  = lbl;
+  // Load this month's data into inputs
+  loadMonthData(key);
+}
+
+// Build the tab strip in Edit Inputs
+function buildEditMonthTabs() {
+  var container = document.getElementById('edit-month-tabs');
+  if (!container) return;
+  container.innerHTML = '';
+  MONTH_TABS.forEach(function(tab) {
+    var btn = document.createElement('button');
+    btn.textContent = tab.short;
+    btn.title = tab.label;
+    btn.className = 'edit-month-tab';
+    btn.setAttribute('data-month-key', tab.key);
+    var isActive = tab.key === _activeEditMonth;
+    // Check if this month has data
+    var hasData = false;
+    try { hasData = !!localStorage.getItem(_monthStorageKey(tab.key)); } catch(e){}
+    btn.style.cssText = 'font-size:12px;font-weight:' + (isActive?'700':'600') + ';padding:5px 14px;border-radius:20px;cursor:pointer;'
+      + 'border:1.5px solid ' + (isActive ? 'var(--tp)' : 'var(--border)') + ';'
+      + 'background:' + (isActive ? 'var(--tp)' : 'var(--card)') + ';'
+      + 'color:' + (isActive ? '#fff' : 'var(--text2)') + ';'
+      + 'font-family:inherit;transition:background .15s,border-color .15s;position:relative';
+    // Dot indicator for months with data
+    if (hasData && !isActive) {
+      btn.innerHTML = tab.short + '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--s-green);margin-left:5px;vertical-align:middle"></span>';
+    }
+    btn.addEventListener('click', function(){ switchEditMonth(tab.key); buildEditMonthTabs(); });
+    container.appendChild(btn);
+  });
+}
+
+
 // â”€â”€ Field map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 // ── Flex Fields ───────────────────────────────────────────────────────────────
@@ -2038,29 +2207,15 @@ function removePhoto(prefix) {
 }
 
 function getSnapshot() {
-  var snap = {theme: currentTheme, fields:{}, pam:'', ppm:'', hs:'', history:[], pamWeekHistory:[], ppmSnaps:[], hsSnaps:[], pamPhoto:'', ppmPhoto:'', hsPhoto:''};
-  FIELD_MAP.forEach(function(e){ var inp=document.getElementById(e[0]); if(inp) snap.fields[e[0]]=inp.value; });
-  snap.pam = document.getElementById('i-pam-rows').value;
-  snap.ppm = document.getElementById('i-ppm-rows').value;
-  var hsTa = document.getElementById('i-hs-rows'); snap.hs = hsTa ? hsTa.value : '';
-  snap.history = loadHistory();
-  snap.history_capacity    = _loadSectionHistory('capacity');
-  snap.history_fulfillment = _loadSectionHistory('fulfillment');
-  snap.history_workforce   = _loadSectionHistory('workforce');
-  snap.pamWeekHistory = loadPamWeekHistory(); // full list across ALL months
-  snap.ppmSnaps = _loadPpmSnaps();
-  snap.hsSnaps  = _loadHsSnaps();
-  var pamImg = document.getElementById('pam-photo-img');
-  var ppmImg = document.getElementById('ppm-photo-img');
-  var hsImg  = document.getElementById('hs-photo-img');
-  if (pamImg && pamImg.src && pamImg.src.indexOf('data:') === 0) snap.pamPhoto = pamImg.src;
-  if (ppmImg && ppmImg.src && ppmImg.src.indexOf('data:') === 0) snap.ppmPhoto = ppmImg.src;
-  if (hsImg  && hsImg.src  && hsImg.src.indexOf('data:')  === 0) snap.hsPhoto  = hsImg.src;
-  snap.flexFields = {
-    capacity:    FLEX_FIELDS.capacity    || FLEX_FIELDS_DEFAULTS.capacity,
-    fulfillment: FLEX_FIELDS.fulfillment || FLEX_FIELDS_DEFAULTS.fulfillment,
-    workforce:   FLEX_FIELDS.workforce   || FLEX_FIELDS_DEFAULTS.workforce
-  };
+  var snap = {theme: currentTheme, pamWeekHistory:[], monthData:{}};
+  snap.pamWeekHistory = loadPamWeekHistory();
+  // Bake all month data into the export so it works offline on any machine
+  MONTH_TABS.forEach(function(tab) {
+    try {
+      var raw = localStorage.getItem(_monthStorageKey(tab.key));
+      if (raw) snap.monthData[tab.key] = JSON.parse(raw);
+    } catch(e){}
+  });
   return snap;
 }
 function exportStandalone() {
@@ -2101,7 +2256,7 @@ function switchTab(id, btn) {
   document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
-  if (id === 'inputs') buildThemeCards();
+  if (id === 'inputs') { buildThemeCards(); buildEditMonthTabs(); }
   if (id === 'trends') renderTrends();
 }
 
@@ -4002,23 +4157,12 @@ var _currentPeriod = '';
 
 // Collect all unique period labels that have data in any store
 function _getDataPeriods() {
-  var seen = {};
+  // Only show MONTH_TABS that have data saved in localStorage
   var periods = [];
-  // Monthly snapshots
-  loadHistory().forEach(function(e) { if (e.label && !seen[e.label]) { seen[e.label] = true; periods.push(e.label); } });
-  // PAM weekly snapshots — derive month period from weekEnding date
-  loadPamWeekHistory().forEach(function(e) {
-    if (!e.weekEnding) return;
-    var d = new Date(e.weekEnding + 'T00:00:00');
-    if (isNaN(d)) return;
-    var lbl = MONTH_FULL[d.getMonth()] + ' ' + d.getFullYear();
-    if (!seen[lbl]) { seen[lbl] = true; periods.push(lbl); }
+  MONTH_TABS.forEach(function(tab) {
+    try { if (localStorage.getItem(_monthStorageKey(tab.key))) periods.push(tab.label); } catch(e){}
   });
-  // Sort by date order
-  periods.sort(function(a, b) {
-    return (parseLabelOrder(a) || 0) - (parseLabelOrder(b) || 0);
-  });
-  return periods;
+  return periods; // already in chronological order (MONTH_TABS is ordered)
 }
 
 // Render the period button strip — call whenever the data changes
@@ -4067,69 +4211,41 @@ function initGlobalPeriodPicker() {
 // Accept a period string directly (called by button clicks)
 function globalPeriodChange(periodStr) {
   _currentPeriod = periodStr;
-  var parts = periodStr.match(/([A-Za-z]+)\s+(\d{4})/);
-  var month = parts ? parts[1] : '';
-  var year  = parts ? parts[2] : '';
 
   // Update ALL section period labels
   SECTION_PERIOD_IDS.forEach(function(s) {
     var sp = document.getElementById(s.labelId);
     if (sp) sp.textContent = periodStr;
   });
-  // Hiring Speed period label
   var hsPeriod = document.getElementById('d-hs-period');
   if (hsPeriod) hsPeriod.textContent = periodStr;
-
-  // Sync cap input (drives snapshot label)
-  var capInp = document.getElementById('i-cap-period');
-  if (capInp) capInp.value = periodStr;
-  var frInp = document.getElementById('i-fr-aug-period');
-  if (frInp) frInp.value = periodStr;
   var frPeriodEl = document.getElementById('d-fr-aug-period');
   if (frPeriodEl) frPeriodEl.textContent = periodStr;
 
-  // Try to find a matching monthly snapshot and load it
-  var h = loadHistory();
-  var match = null;
-  var periodLower = periodStr.toLowerCase();
-  var monthShort = month.slice(0,3).toLowerCase();
-  for (var i = 0; i < h.length; i++) {
-    var lbl = (h[i].label || '').toLowerCase();
-    if (lbl === periodLower ||
-        (lbl.indexOf(monthShort) === 0 && year && lbl.indexOf(year.slice(2)) >= 0)) {
-      match = h[i]; break;
-    }
-  }
+  // Find the MONTH_TABS key matching this period label
+  var tab = MONTH_TABS.filter(function(t){ return t.label === periodStr; })[0];
+  if (!tab) { buildGlobalPeriodPicker(); return; }
 
-  if (match && match.fields) {
-    if (!_liveStash) {
-      _liveStash = {};
-      FIELD_MAP.forEach(function(e){ var inp=document.getElementById(e[0]); if(inp) _liveStash[e[0]]=inp.value; });
-      _liveStash._pam = document.getElementById('i-pam-rows').value;
-      _liveStash._ppm = document.getElementById('i-ppm-rows').value;
-      _liveStash._flexFields = {
-        capacity:    (FLEX_FIELDS.capacity || []).slice(),
-        fulfillment: (FLEX_FIELDS.fulfillment || []).slice(),
-        workforce:   (FLEX_FIELDS.workforce || []).slice()
-      };
+  // Load from the new month-keyed storage
+  var raw = null;
+  try { raw = localStorage.getItem(_monthStorageKey(tab.key)); } catch(e){}
+  if (raw) {
+    var data = {};
+    try { data = JSON.parse(raw); } catch(e){}
+    if (data.fields) {
+      Object.keys(data.fields).forEach(function(id){
+        var el = document.getElementById(id); if (el) el.value = data.fields[id];
+      });
     }
-    Object.keys(match.fields).forEach(function(id){
-      var el = document.getElementById(id);
-      if (id === 'i-cap-period' || id === 'i-fr-aug-period') return;
-      if (el) el.value = match.fields[id];
-    });
-    if (match.pam) { document.getElementById('i-pam-rows').value = match.pam; try { pamGridLoad(JSON.parse(match.pam)); } catch(eg){} }
-    if (match.ppm) { document.getElementById('i-ppm-rows').value = match.ppm; try { ppmGridLoad(JSON.parse(match.ppm)); } catch(eg){} }
-    // Restore per-section flex fields from section-scoped keys
-    ['capacity','fulfillment','workforce'].forEach(function(s) {
-      var raw = match['flexFields_' + s] || match.flexFields; // fallback to old single key
-      if (raw) { try { var ff = JSON.parse(raw); if (Array.isArray(ff)) flexFieldsLoad(s, ff); } catch(eg){} }
-    });
+    if (data.pam) { document.getElementById('i-pam-rows').value = data.pam; try { pamGridLoad(JSON.parse(data.pam)); } catch(eg){} }
+    if (data.ppm) { document.getElementById('i-ppm-rows').value = data.ppm; try { ppmGridLoad(JSON.parse(data.ppm)); } catch(eg){} }
+    if (data.hs)  { var hsTaGpc = document.getElementById('i-hs-rows'); if(hsTaGpc) hsTaGpc.value = data.hs; try { if(typeof hsGridLoad==='function') hsGridLoad(JSON.parse(data.hs)); } catch(eg){} }
+    if (data.flexFields) {
+      ['capacity','fulfillment','workforce'].forEach(function(s){
+        if (data.flexFields[s]) flexFieldsLoad(s, data.flexFields[s]);
+      });
+    }
     applyInputs();
-    var banner = document.getElementById('hist-banner');
-    var bannerLabel = document.getElementById('hist-banner-label');
-    if (banner) banner.style.display = 'flex';
-    if (bannerLabel) bannerLabel.textContent = match.label;
     updateGlobalPeriodBadge(true);
   } else {
     updateGlobalPeriodBadge(false);
@@ -4512,24 +4628,15 @@ function initPamWeekSnapshots() {
   flexFieldBuildGrid('fulfillment');
   flexFieldBuildGrid('workforce');
 
-  if (pre && pre.fields) {
-    Object.keys(pre.fields).forEach(function(id){ var el=document.getElementById(id); if(el) el.value=pre.fields[id]; });
-    if (pre.pam) { document.getElementById('i-pam-rows').value = pre.pam; try { pamGridLoad(JSON.parse(pre.pam)); } catch(eg){} }
-    if (pre.ppm) { document.getElementById('i-ppm-rows').value = pre.ppm; try { ppmGridLoad(JSON.parse(pre.ppm)); } catch(eg){} }
-  } else {
-    document.getElementById('i-pam-rows').value = JSON.stringify(PAM_DEFAULT, null, 2);
-    pamGridLoad(PAM_DEFAULT);
-    document.getElementById('i-ppm-rows').value = JSON.stringify(PPM_DEFAULT, null, 2);
-    ppmGridLoad(PPM_DEFAULT);
-  }
-  // Restore history from preloaded export only if localStorage has no data yet
-  if (pre && pre.history && pre.history.length) {
-    try {
-      var existing = localStorage.getItem('dash_history');
-      if (!existing || existing === '[]') {
-        localStorage.setItem('dash_history', JSON.stringify(pre.history));
-      }
-    } catch(e){}
+  // Restore month data from preloaded export (only if localStorage has no data)
+  if (pre && pre.monthData) {
+    Object.keys(pre.monthData).forEach(function(key) {
+      try {
+        if (!localStorage.getItem(_monthStorageKey(key))) {
+          localStorage.setItem(_monthStorageKey(key), JSON.stringify(pre.monthData[key]));
+        }
+      } catch(e){}
+    });
   }
   // Restore PAM week history from preloaded export
   if (pre && pre.pamWeekHistory && pre.pamWeekHistory.length) {
@@ -4540,22 +4647,20 @@ function initPamWeekSnapshots() {
       }
     } catch(e){}
   }
-  // Restore pam/ppm photos — prefer localStorage, fall back to preloaded export
-  // (hs photo is restored in the deferred HS init block below)
-  (function() {
-    var prefixes = ['pam', 'ppm'];
-    var keys = [PAM_PHOTO_KEY, PPM_PHOTO_KEY];
-    prefixes.forEach(function(pfx, i) {
-      var stored = null;
-      try { stored = localStorage.getItem(keys[i]); } catch(e) {}
-      if (!stored && pre) { stored = pfx === 'pam' ? pre.pamPhoto : pre.ppmPhoto; }
-      if (stored && stored.indexOf('data:') === 0) setPhoto(pfx, stored);
-    });
-  })();
   try { _migrateHistory(); } catch(e) { console.error('_migrateHistory failed:', e); }
-  try { applyInputs(); } catch(e) { console.error('applyInputs failed:', e); }
   try { buildThemeCards(); } catch(e) { console.error('buildThemeCards failed:', e); }
   try { initAllPeriodPickers(); } catch(e) {} // no-op, kept for safety
+  // Build edit-month tabs and load the most recent month's data into inputs
+  try { buildEditMonthTabs(); } catch(e) { console.error('buildEditMonthTabs failed:', e); }
+  try {
+    // Find most recent month with data and pre-load it into Edit Inputs
+    var latestMonthKey = null;
+    for (var mi = MONTH_TABS.length - 1; mi >= 0; mi--) {
+      try { if (localStorage.getItem(_monthStorageKey(MONTH_TABS[mi].key))) { latestMonthKey = MONTH_TABS[mi].key; break; } } catch(e2){}
+    }
+    if (latestMonthKey) { _activeEditMonth = latestMonthKey; loadMonthData(latestMonthKey); buildEditMonthTabs(); }
+  } catch(e) {}
+  try { applyInputs(); } catch(e) { console.error('applyInputs failed:', e); }
   try { initGlobalPeriodPicker(); } catch(e) { console.error('initGlobalPeriodPicker failed:', e); }
   try { initPamWeekSnapshots(); } catch(e) { console.error('initPamWeekSnapshots failed:', e); }
 })();
