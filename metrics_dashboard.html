@@ -588,14 +588,16 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
         <div id="hs-photo-display" style="display:none;margin-bottom:12px">
           <img id="hs-photo-img" class="photo-preview-img" src="" alt="Hiring Speed screenshot" style="max-height:320px">
         </div>
-        <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Current Data</div>
-        <div class="tbl-wrap">
-          <table class="dash-tbl" id="hs-dash-tbl" style="min-width:900px">
-            <thead id="hs-dash-thead"></thead>
-            <tbody id="hs-dash-tbody"></tbody>
-          </table>
+        <div id="hs-current-wrap" style="display:none">
+          <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Current Data</div>
+          <div class="tbl-wrap">
+            <table class="dash-tbl" id="hs-dash-tbl" style="min-width:900px">
+              <thead id="hs-dash-thead"></thead>
+              <tbody id="hs-dash-tbody"></tbody>
+            </table>
+          </div>
+          <div style="margin-top:8px;font-size:10.5px;color:var(--text3)">SLA row shows target days per band level. Blank cells = no data for that band in that country.</div>
         </div>
-        <div style="margin-top:8px;font-size:10.5px;color:var(--text3)">SLA row shows target days per band level. Blank cells = no data for that band in that country.</div>
       </div>
     </div>
 
@@ -4173,6 +4175,9 @@ function updateGlobalPeriodBadge(hasSnapshot) {
   var liveBadge = document.getElementById('gp-live-badge');
   if (snapBadge) snapBadge.className = 'global-period-snap-badge' + (hasSnapshot ? ' show' : '');
   if (liveBadge) liveBadge.style.display = (_currentPeriod === '') ? 'inline-block' : 'none';
+  // Show Current Data table only on Live view; hide it when viewing historical periods
+  var hsCurrent = document.getElementById('hs-current-wrap');
+  if (hsCurrent) hsCurrent.style.display = (_currentPeriod === '') ? 'block' : 'none';
 }
 
 function globalPeriodReset() {
