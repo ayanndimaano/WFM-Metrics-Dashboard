@@ -1014,6 +1014,7 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
         <table id="flex-tbl-capacity" style="width:100%;border-collapse:collapse">
           <thead>
             <tr style="background:var(--tbl-head)">
+              <th style="padding:6px 4px;width:24px"></th>
               <th style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--tbl-head-text);text-align:left;width:40%">Label (shown on dashboard)</th>
               <th style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--tbl-head-text);text-align:left">Value</th>
               <th style="padding:6px 4px;width:30px"></th>
@@ -1114,6 +1115,7 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
         <table id="flex-tbl-fulfillment" style="width:100%;border-collapse:collapse">
           <thead>
             <tr style="background:var(--tbl-head)">
+              <th style="padding:6px 4px;width:24px"></th>
               <th style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--tbl-head-text);text-align:left;width:40%">Label (shown on dashboard)</th>
               <th style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--tbl-head-text);text-align:left">Value</th>
               <th style="padding:6px 4px;width:30px"></th>
@@ -1139,6 +1141,7 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
         <table id="flex-tbl-workforce" style="width:100%;border-collapse:collapse">
           <thead>
             <tr style="background:var(--tbl-head)">
+              <th style="padding:6px 4px;width:24px"></th>
               <th style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--tbl-head-text);text-align:left;width:40%">Label (shown on dashboard)</th>
               <th style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--tbl-head-text);text-align:left">Value</th>
               <th style="padding:6px 4px;width:30px"></th>
@@ -1751,13 +1754,14 @@ function loadMonthData(key) {
   var raw = null;
   try { raw = localStorage.getItem(_monthStorageKey(key)); } catch(e){}
   if (!raw) {
-    // Clear all inputs for a blank month
+    // Blank month — clear all scalar inputs
     _getAllFieldIds().forEach(function(id){
       var el = document.getElementById(id); if (el) el.value = '';
     });
-    // Clear flex fields to empty
+    // Pre-load default labels with blank values so user just fills in the numbers
     ['capacity','fulfillment','workforce'].forEach(function(s){
-      flexFieldsLoad(s, []);
+      var blanked = FLEX_FIELDS_DEFAULTS[s].map(function(f){ return {label: f.label, value: ''}; });
+      flexFieldsLoad(s, blanked);
     });
     var pamTa = document.getElementById('i-pam-rows');
     if (pamTa) { pamTa.value = '[]'; pamGridLoad([]); }
@@ -1931,13 +1935,52 @@ function flexFieldBuildGrid(sec) {
   var fields = FLEX_FIELDS[sec] || [];
   var rows = '';
   fields.forEach(function(f, i) {
-    rows += '<tr>'
+    rows += '<tr draggable="true" data-flex-row="' + i + '" data-flex-sec="' + sec + '" style="cursor:default">'
+      + '<td style="padding:3px 4px;width:24px;text-align:center;cursor:grab;color:var(--text3);font-size:14px" title="Drag to reorder">&#8942;</td>'
       + '<td style="padding:3px 4px"><input class="pam-grid-cell left" type="text" style="width:100%;box-sizing:border-box" value="' + escHtml(f.label) + '" oninput="flexFieldsSync(\'' + sec + '\')" data-flex-label="' + i + '"></td>'
       + '<td style="padding:3px 4px"><input class="pam-grid-cell" type="text" style="width:100%;box-sizing:border-box" value="' + escHtml(f.value) + '" oninput="flexFieldsSync(\'' + sec + '\')" data-flex-value="' + i + '"></td>'
       + '<td style="padding:3px 4px;text-align:center"><button class="pam-del-btn" onclick="flexFieldDelRow(\'' + sec + '\',' + i + ')" title="Remove">\u00D7</button></td>'
       + '</tr>';
   });
   tbody.innerHTML = rows;
+  // Wire drag-and-drop reorder
+  _flexFieldInitDrag(tbody, sec);
+}
+
+function _flexFieldInitDrag(tbody, sec) {
+  var dragSrc = null;
+  Array.prototype.forEach.call(tbody.querySelectorAll('tr[data-flex-row]'), function(tr) {
+    tr.addEventListener('dragstart', function(e) {
+      dragSrc = tr;
+      e.dataTransfer.effectAllowed = 'move';
+      tr.style.opacity = '0.4';
+    });
+    tr.addEventListener('dragend', function() {
+      tr.style.opacity = '';
+      tbody.querySelectorAll('tr[data-flex-row]').forEach(function(r){ r.classList.remove('drag-over'); });
+    });
+    tr.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      tbody.querySelectorAll('tr[data-flex-row]').forEach(function(r){ r.classList.remove('drag-over'); });
+      if (tr !== dragSrc) tr.style.outline = '2px solid var(--tp)';
+    });
+    tr.addEventListener('dragleave', function() { tr.style.outline = ''; });
+    tr.addEventListener('drop', function(e) {
+      e.preventDefault();
+      tr.style.outline = '';
+      if (!dragSrc || dragSrc === tr) return;
+      // Reorder FLEX_FIELDS[sec] by current DOM row indices
+      var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr[data-flex-row]'));
+      var fromIdx = parseInt(dragSrc.getAttribute('data-flex-row'));
+      var toIdx   = parseInt(tr.getAttribute('data-flex-row'));
+      var fields = FLEX_FIELDS[sec] || [];
+      var moved = fields.splice(fromIdx, 1)[0];
+      fields.splice(toIdx, 0, moved);
+      FLEX_FIELDS[sec] = fields;
+      flexFieldBuildGrid(sec);
+    });
+  });
 }
 
 function flexFieldsSync(sec) {
