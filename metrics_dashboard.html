@@ -4664,7 +4664,6 @@ function openPamSnapPanel(entry, history, snapIdx) {
 
   renderPamWeekTags(history, entry.weekEnding);
   panel.style.display = 'block';
-  setTimeout(function(){ panel.scrollIntoView({ behavior:'smooth', block:'nearest' }); }, 60);
 }
 
 function closePamSnapPanel() {
@@ -5409,7 +5408,6 @@ function openHsSnapPanel(snap, snaps, snapIdx) {
   tbody.innerHTML = html;
   panel.style.display = 'block';
   renderHsSnapTags(snap.label);
-  setTimeout(function() { panel.scrollIntoView({ behavior:'smooth', block:'nearest' }); }, 60);
 }
 
 function closeHsSnapPanel() {
