@@ -2178,6 +2178,17 @@ function syncWorkforceFlexToInputs() {
     var inputId = _WF_LABEL_TO_INPUT[f.label];
     if (!inputId || !f.value) return;
     var val = f.value;
+    // QTD CU: split "94.9% (delta text)" → main value + delta note
+    if (f.label === 'QTD CU') {
+      var m = val.match(/^([^\(]+)\s*\(([^\)]+)\)/);
+      if (m) {
+        var el = document.getElementById(inputId); if (el) el.value = m[1].trim();
+        var del = document.getElementById('i-util-delta'); if (del) del.value = m[2].trim();
+        return;
+      }
+      var el = document.getElementById(inputId); if (el) el.value = val;
+      return;
+    }
     // Parse "359 (1.6%)" → main="359", weight="1.6%"
     var weightId = _WF_LABEL_TO_WEIGHT_INPUT[f.label];
     if (weightId) {
