@@ -1866,6 +1866,8 @@ function renderCapacityCards() {
     return '';
   }
   function setEl(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
+  // Also sync a hidden input so other code reading it gets the right value
+  function setInp(id, val) { var el = document.getElementById(id); if (el && val) el.value = val; }
 
   setEl('d-cap-hc-total',  fv('Headcount'));
   // Build MtM / YtY line from the two delta fields
@@ -1879,6 +1881,27 @@ function renderCapacityCards() {
 
   setEl('d-cap-band-mix',  fv('Band Mix Score'));
   setEl('d-cap-band-delta',fv('Band Mix Delta'));
+
+  // Sync hiring funnel inputs from flex fields so renderHiringFunnel() always uses
+  // the correct period's data, regardless of what the hidden legacy inputs hold
+  var hmPeriod = fv('Hiring Metrics Period');
+  var s2o = fv('Submitted \u2192 Onboard');
+  var s2a = fv('Submitted \u2192 Approval');
+  var a2o = fv('Approval \u2192 Onboard');
+  if (hmPeriod) { setInp('i-hm-period', hmPeriod); setEl('d-hm-period', hmPeriod); }
+  if (s2o) setInp('i-hm-s2o', s2o);
+  if (s2a) setInp('i-hm-s2a', s2a);
+  if (a2o) setInp('i-hm-a2o', a2o);
+  var s1 = fv('S2O Change') || fv('S\u2192O Change');
+  var s2 = fv('S2A Change') || fv('S\u2192A Change');
+  var s3 = fv('A2O Change') || fv('A\u2192O Change');
+  if (s1) { setInp('i-hms1', s1); setEl('d-hms1', s1); }
+  if (s2) { setInp('i-hms2', s2); setEl('d-hms2', s2); }
+  if (s3) { setInp('i-hms3', s3); setEl('d-hms3', s3); }
+  var note = fv('Hiring Note');
+  if (note) { setInp('i-hm-note', note); setEl('d-hm-note', note); }
+  // Re-render the funnel SVG now that inputs are updated
+  try { renderHiringFunnel(); } catch(ex) {}
 }
 
 function renderFlexSection(sec) {
