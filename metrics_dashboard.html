@@ -1714,6 +1714,9 @@ function saveMonthData() {
   flexFieldsSync('capacity');
   flexFieldsSync('fulfillment');
   flexFieldsSync('workforce');
+  // Sync flex values into legacy hidden inputs so TREND_METRICS capture gets correct numbers
+  syncCapacityFlexToInputs();
+  syncWorkforceFlexToInputs();
 
   var data = {
     fields: {},
@@ -1742,9 +1745,17 @@ function saveMonthData() {
   // Also write to sessionStorage as fallback (survives refresh but not tab close)
   try { sessionStorage.setItem(_monthStorageKey(key), serialized); } catch(e){}
 
+  // Also write to the section trend history so the Trends tab picks up the numbers
+  var tab = MONTH_TABS.filter(function(t){ return t.key === key; })[0];
+  var trendLabel = tab ? tab.label : key;
+  try {
+    ['capacity','fulfillment','workforce'].forEach(function(sec) {
+      _upsertSectionSnapshot(_buildSectionEntry(trendLabel, sec), sec);
+    });
+  } catch(ex) { console.error('Trend snapshot capture failed:', ex); }
+
   // Refresh dashboard period buttons and load this month on dashboard
   buildGlobalPeriodPicker();
-  var tab = MONTH_TABS.filter(function(t){ return t.key === key; })[0];
   if (tab) globalPeriodChange(tab.label);
 
   // Flash confirm
@@ -2142,6 +2153,26 @@ function renderFlexSection(sec) {
 }
 
 
+// Sync FLEX_FIELDS.capacity flex values into legacy hidden inputs used by TREND_METRICS capture.
+function syncCapacityFlexToInputs() {
+  var fields = FLEX_FIELDS.capacity || [];
+  function fv(label) {
+    for (var i = 0; i < fields.length; i++) { if (fields[i].label === label) return fields[i].value; }
+    return '';
+  }
+  function setInp(id, val) { if (!val) return; var el = document.getElementById(id); if (el) el.value = val; }
+  // Strip non-numeric suffix for numeric fields (e.g. "22,494" stays, "72.50%" → "72.50")
+  setInp('i-hc-total',   fv('Headcount'));
+  setInp('i-lcc',        fv('LCC Hires %'));
+  setInp('i-band-mix',   fv('Band Mix Score'));
+  // Deltas
+  setInp('i-hc-mtm',     fv('HC MtM'));
+  setInp('i-hc-yty',     fv('HC YtY'));
+  setInp('i-band-delta', fv('Band Mix Delta'));
+  setInp('i-lcc-delta',  fv('LCC Delta'));
+  setInp('i-lcc-note',   fv('LCC Note'));
+}
+
 // Sync FLEX_FIELDS.workforce label-values into the hidden legacy inputs that FIELD_MAP reads from.
 // This is the bridge between the flex field grid and the structured PAM/DI/PPM/Util scorecards.
 var _WF_LABEL_TO_INPUT = {
@@ -2248,6 +2279,7 @@ function applyInputs() {
   ppmGridSyncBeforeApply();
   if (typeof hsGridSyncBeforeApply === 'function') hsGridSyncBeforeApply();
   // Bridge: sync flex field values into hidden legacy inputs before FIELD_MAP runs
+  syncCapacityFlexToInputs();
   syncWorkforceFlexToInputs();
   FIELD_MAP.forEach(function(e) {
     var inp = document.getElementById(e[0]); if (!inp) return;
