@@ -2139,6 +2139,66 @@ function renderFlexSection(sec) {
 }
 
 
+// Sync FLEX_FIELDS.workforce label-values into the hidden legacy inputs that FIELD_MAP reads from.
+// This is the bridge between the flex field grid and the structured PAM/DI/PPM/Util scorecards.
+var _WF_LABEL_TO_INPUT = {
+  'PAM As-of Date':               'i-pam-date',
+  'PAM Overall':                  'i-pam-overall',
+  'CV Compliance':                'i-pam-cv',
+  'Timely Claim':                 'i-pam-tc',
+  'Hours Plan':                   'i-pam-hp',
+  'JRS & Skills':                 'i-pam-jrs',
+  'DI - JRS Not Valid':           'i-di-jrs',
+  'DI - On Bench':                'i-di-bench',
+  'DI - JRS Mismatch':            'i-di-mismatch',
+  'DI - Upcoming Bench 1-30d':    'i-di-ub30',
+  'DI - Upcoming Bench 31-90d':   'i-di-ub90',
+  'PPM As-of Date':               'i-ppm-date',
+  'Total Practitioners':          'i-ppm-total',
+  'Monitor - Recent Assignment':  'i-ppm-monitor',
+  'Reskill/Upskill/Cross-skill':  'i-ppm-reskill',
+  'QTD CU':                       'i-util-qtd',
+  'Missing Claim':                'i-util-mc',
+  'AAID':                         'i-util-aaid',
+  'Idle Time':                    'i-util-idle',
+  'Learning':                     'i-util-learn'
+};
+// Also parse compound values like "359 (1.6%)" into main + weight fields
+var _WF_LABEL_TO_WEIGHT_INPUT = {
+  'DI - JRS Not Valid':           'i-di-jrs-w',
+  'DI - On Bench':                'i-di-bench-w',
+  'DI - JRS Mismatch':            'i-di-mismatch-w',
+  'DI - Upcoming Bench 1-30d':    'i-di-ub30-w',
+  'DI - Upcoming Bench 31-90d':   'i-di-ub90-w',
+  'Total Practitioners':          'i-ppm-pct'
+};
+function syncWorkforceFlexToInputs() {
+  var fields = FLEX_FIELDS.workforce || [];
+  fields.forEach(function(f) {
+    var inputId = _WF_LABEL_TO_INPUT[f.label];
+    if (!inputId || !f.value) return;
+    var val = f.value;
+    // Parse "359 (1.6%)" → main="359", weight="1.6%"
+    var weightId = _WF_LABEL_TO_WEIGHT_INPUT[f.label];
+    if (weightId) {
+      var m = val.match(/^([^\(]+)\s*\(([^\)]+)\)/);
+      if (m) {
+        var el = document.getElementById(inputId); if (el) el.value = m[1].trim();
+        var wel = document.getElementById(weightId); if (wel) wel.value = m[2].trim();
+        return;
+      }
+    }
+    var el = document.getElementById(inputId); if (el) el.value = val;
+  });
+  // Also sync fulfillment flex fields to hidden legacy inputs
+  var ff = FLEX_FIELDS.fulfillment || [];
+  ff.forEach(function(f) {
+    var map = {'BO Fill Rate':'i-fr-aug','APAC/Japan':'i-fr-aug-apac','Americas':'i-fr-aug-amer','EMEA':'i-fr-aug-emea'};
+    var id = map[f.label];
+    if (id && f.value) { var el = document.getElementById(id); if (el) el.value = f.value; }
+  });
+}
+
 var FIELD_MAP = [
   ['i-cap-period',    null,            function(v){ var sp=document.getElementById('cap-period-label'); if(sp) sp.textContent=v; syncPeriodPicker('cap',v); }],
   ['i-cap-source',    null,            function(v){ var a=document.getElementById('d-cap-source'); if(a) a.textContent=v; var b=document.getElementById('d-cap-source2'); if(b) b.textContent=v.split('/')[0].trim(); }],
@@ -2173,6 +2233,8 @@ function applyInputs() {
   pamGridSyncBeforeApply();
   ppmGridSyncBeforeApply();
   if (typeof hsGridSyncBeforeApply === 'function') hsGridSyncBeforeApply();
+  // Bridge: sync flex field values into hidden legacy inputs before FIELD_MAP runs
+  syncWorkforceFlexToInputs();
   FIELD_MAP.forEach(function(e) {
     var inp = document.getElementById(e[0]); if (!inp) return;
     var v = inp.value.trim();
