@@ -4309,10 +4309,16 @@ var _currentPeriod = '';
 
 // Collect all unique period labels that have data in any store
 function _getMonthRaw(key) {
-  // Check localStorage first, fall back to sessionStorage
+  // Check localStorage, then sessionStorage, then __PRELOADED__ directly
   var raw = null;
   try { raw = localStorage.getItem(_monthStorageKey(key)); } catch(e){}
   if (!raw) { try { raw = sessionStorage.getItem(_monthStorageKey(key)); } catch(e){} }
+  if (!raw) {
+    try {
+      var pre = (typeof __PRELOADED__ !== 'undefined') ? __PRELOADED__ : null;
+      if (pre && pre.monthData && pre.monthData[key]) raw = JSON.stringify(pre.monthData[key]);
+    } catch(e){}
+  }
   return raw;
 }
 
@@ -4814,14 +4820,12 @@ function initPamWeekSnapshots() {
   flexFieldBuildGrid('fulfillment');
   flexFieldBuildGrid('workforce');
 
-  // Restore month data from preloaded export (only if localStorage has no data)
+  // Restore month data from preloaded export into both storages
   if (pre && pre.monthData) {
     Object.keys(pre.monthData).forEach(function(key) {
-      try {
-        if (!localStorage.getItem(_monthStorageKey(key))) {
-          localStorage.setItem(_monthStorageKey(key), JSON.stringify(pre.monthData[key]));
-        }
-      } catch(e){}
+      var serialized = JSON.stringify(pre.monthData[key]);
+      try { if (!localStorage.getItem(_monthStorageKey(key))) localStorage.setItem(_monthStorageKey(key), serialized); } catch(e){}
+      try { if (!sessionStorage.getItem(_monthStorageKey(key))) sessionStorage.setItem(_monthStorageKey(key), serialized); } catch(e){}
     });
   }
   // Restore PAM week history from preloaded export
