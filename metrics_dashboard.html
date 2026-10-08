@@ -468,15 +468,6 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
 <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• DASHBOARD TAB -->
 <div class="tab-pane active" id="tab-dashboard"><div style="max-width:1100px;margin:0 auto;width:100%;box-sizing:border-box;min-width:0;overflow-x:hidden">
 
-  <!-- Historical view banner (hidden during live view) -->
-  <div id="hist-banner" style="display:none;align-items:center;gap:12px;background:var(--s-amber-bg);border:1px solid var(--s-amber);border-radius:8px;padding:10px 16px;margin-bottom:12px;font-size:13px;color:var(--s-amber-text)">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    <span>Viewing saved snapshot: <strong id="hist-banner-label"></strong> &#8212; this is historical data, not the current live view.</span>
-    <button onclick="restoreLive()" style="margin-left:auto;background:var(--s-amber);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">
-      &#8592; Back to Current
-    </button>
-  </div>
-
   <!-- Action bar -->
   <div class="action-bar" id="dash-action-bar">
     <button class="btn-primary" onclick="exportStandalone()">
@@ -500,8 +491,6 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
   <div class="global-period-bar" id="global-period-bar">
     <label>&#128197; Viewing period:</label>
     <div id="gp-period-btns" style="display:flex;gap:5px;flex-wrap:wrap;align-items:center"></div>
-    <span class="global-period-snap-badge" id="gp-snap-badge">&#10003; Snapshot loaded</span>
-    <span class="global-period-live-badge" id="gp-live-badge">&#8226; Live</span>
   </div>
 
   <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION 1: Capacity -->
@@ -4039,19 +4028,7 @@ function buildGlobalPeriodPicker() {
   container.innerHTML = '';
   var periods = _getDataPeriods();
 
-  // "Live" button always shown first
-  var liveBtn = document.createElement('button');
-  liveBtn.textContent = '\u2022 Live';
-  var isLive = _currentPeriod === '';
-  liveBtn.style.cssText = 'font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;cursor:pointer;border:1.5px solid '
-    + (isLive ? 'var(--tp)' : 'var(--border)')
-    + ';background:' + (isLive ? 'var(--tp)' : 'var(--card)')
-    + ';color:' + (isLive ? '#fff' : 'var(--text2)')
-    + ';font-family:inherit;transition:background .15s,border-color .15s';
-  liveBtn.addEventListener('click', function() { globalPeriodReset(); });
-  container.appendChild(liveBtn);
-
-  // One button per data period
+  // One button per data period (no Live button)
   periods.forEach(function(period) {
     var btn = document.createElement('button');
     var isActive = period === _currentPeriod;
@@ -4072,15 +4049,19 @@ function buildGlobalPeriodPicker() {
   if (!periods.length) {
     var ph = document.createElement('span');
     ph.style.cssText = 'font-size:11px;color:var(--text3);font-style:italic';
-    ph.textContent = 'No snapshots yet \u2014 save one to see periods here';
+    ph.textContent = 'No snapshots yet \u2014 save one from Edit Inputs to get started';
     container.appendChild(ph);
   }
 }
 
 function initGlobalPeriodPicker() {
-  _currentPeriod = '';
-  buildGlobalPeriodPicker();
-  updateGlobalPeriodBadge(false);
+  // Auto-select the most recent period on load (no Live state)
+  var periods = _getDataPeriods();
+  if (periods.length) {
+    globalPeriodChange(periods[periods.length - 1]);
+  } else {
+    buildGlobalPeriodPicker();
+  }
 }
 
 // Accept a period string directly (called by button clicks)
@@ -4171,13 +4152,9 @@ function globalPeriodChange(periodStr) {
 }
 
 function updateGlobalPeriodBadge(hasSnapshot) {
-  var snapBadge = document.getElementById('gp-snap-badge');
-  var liveBadge = document.getElementById('gp-live-badge');
-  if (snapBadge) snapBadge.className = 'global-period-snap-badge' + (hasSnapshot ? ' show' : '');
-  if (liveBadge) liveBadge.style.display = (_currentPeriod === '') ? 'inline-block' : 'none';
-  // Show Current Data table only on Live view; hide it when viewing historical periods
+  // Current Data table is always hidden — data is viewed via period buttons only
   var hsCurrent = document.getElementById('hs-current-wrap');
-  if (hsCurrent) hsCurrent.style.display = (_currentPeriod === '') ? 'block' : 'none';
+  if (hsCurrent) hsCurrent.style.display = 'none';
 }
 
 function globalPeriodReset() {
