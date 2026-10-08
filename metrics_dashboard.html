@@ -2373,7 +2373,8 @@ function exportStandalone() {
   applyInputs();
   var snap = getSnapshot();
   var html = document.documentElement.outerHTML;
-  var inject = '<script id="__preload__">var __PRELOADED__=' + JSON.stringify(snap) + ';<\/script>';
+  // Inject preloaded data + read-only flag so exported file hides Edit Inputs
+  var inject = '<script id="__preload__">var __PRELOADED__=' + JSON.stringify(snap) + ';var __READONLY__=true;<\/script>';
   html = html.replace('<head>', '<head>' + inject);
   var blob = new Blob([html], {type:'text/html'});
   var a = document.createElement('a');
@@ -4762,10 +4763,37 @@ function initPamWeekSnapshots() {
 }
 (function init() {
   var pre = (typeof __PRELOADED__ !== 'undefined') ? __PRELOADED__ : null;
+  var isReadOnly = (typeof __READONLY__ !== 'undefined') && __READONLY__;
   var savedTheme = pre ? pre.theme : null;
   try { if (!savedTheme) savedTheme = localStorage.getItem('dash_theme'); } catch(e) {}
   // Default to IBM Blue
   setTheme(savedTheme && THEMES[savedTheme] ? savedTheme : 'ibm', null);
+
+  // Read-only mode: hide Edit Inputs tab, Save Snapshot button, and action buttons
+  if (isReadOnly) {
+    // Hide the Edit Inputs tab button
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+      if (btn.getAttribute('onclick') && btn.getAttribute('onclick').indexOf('inputs') !== -1) {
+        btn.style.display = 'none';
+      }
+    });
+    // Hide Save Snapshot button in action bar
+    document.querySelectorAll('.action-bar .btn-secondary, .action-bar .btn-primary').forEach(function(btn) {
+      if (btn.textContent.indexOf('Save Snapshot') !== -1) btn.style.display = 'none';
+    });
+    // Replace Export & Share with a note
+    document.querySelectorAll('.action-bar .btn-primary').forEach(function(btn) {
+      if (btn.textContent.indexOf('Export') !== -1) btn.style.display = 'none';
+    });
+    // Add read-only banner inside action bar
+    var actionBar = document.getElementById('dash-action-bar');
+    if (actionBar) {
+      var badge = document.createElement('span');
+      badge.style.cssText = 'font-size:11px;font-weight:600;color:var(--text3);padding:3px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface,#f7f8fa)';
+      badge.textContent = '\uD83D\uDD12 View-only export';
+      actionBar.appendChild(badge);
+    }
+  }
 
   // Load flex fields (localStorage → preloaded → defaults)
   _loadFlexFields();
