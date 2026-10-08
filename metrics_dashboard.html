@@ -1737,7 +1737,10 @@ function saveMonthData() {
   if (ppmImg && ppmImg.src && ppmImg.src.indexOf('data:') === 0) data.ppmPhoto = ppmImg.src;
   if (hsImg  && hsImg.src  && hsImg.src.indexOf('data:')  === 0) data.hsPhoto  = hsImg.src;
 
-  try { localStorage.setItem(_monthStorageKey(key), JSON.stringify(data)); } catch(e){ alert('Save failed — localStorage may be full.'); return; }
+  var serialized = JSON.stringify(data);
+  try { localStorage.setItem(_monthStorageKey(key), serialized); } catch(e){ alert('Save failed — localStorage may be full.'); return; }
+  // Also write to sessionStorage as fallback (survives refresh but not tab close)
+  try { sessionStorage.setItem(_monthStorageKey(key), serialized); } catch(e){}
 
   // Refresh dashboard period buttons and load this month on dashboard
   buildGlobalPeriodPicker();
@@ -1752,7 +1755,7 @@ function saveMonthData() {
 // Load a month's saved data into all input fields
 function loadMonthData(key) {
   var raw = null;
-  try { raw = localStorage.getItem(_monthStorageKey(key)); } catch(e){}
+  raw = _getMonthRaw(key);
   if (!raw) {
     // Blank month — clear all scalar inputs
     _getAllFieldIds().forEach(function(id){
@@ -1840,7 +1843,7 @@ function buildEditMonthTabs() {
     var isActive = tab.key === _activeEditMonth;
     // Check if this month has data
     var hasData = false;
-    try { hasData = !!localStorage.getItem(_monthStorageKey(tab.key)); } catch(e){}
+    hasData = !!_getMonthRaw(tab.key);
     btn.style.cssText = 'font-size:12px;font-weight:' + (isActive?'700':'600') + ';padding:5px 14px;border-radius:20px;cursor:pointer;'
       + 'border:1.5px solid ' + (isActive ? 'var(--tp)' : 'var(--border)') + ';'
       + 'background:' + (isActive ? 'var(--tp)' : 'var(--card)') + ';'
@@ -2328,7 +2331,7 @@ function getSnapshot() {
   // Bake all month data into the export so it works offline on any machine
   MONTH_TABS.forEach(function(tab) {
     try {
-      var raw = localStorage.getItem(_monthStorageKey(tab.key));
+      var raw = _getMonthRaw(tab.key);
       if (raw) snap.monthData[tab.key] = JSON.parse(raw);
     } catch(e){}
   });
@@ -4272,11 +4275,19 @@ var MONTH_FULL  = ['January','February','March','April','May','June','July','Aug
 var _currentPeriod = '';
 
 // Collect all unique period labels that have data in any store
+function _getMonthRaw(key) {
+  // Check localStorage first, fall back to sessionStorage
+  var raw = null;
+  try { raw = localStorage.getItem(_monthStorageKey(key)); } catch(e){}
+  if (!raw) { try { raw = sessionStorage.getItem(_monthStorageKey(key)); } catch(e){} }
+  return raw;
+}
+
 function _getDataPeriods() {
-  // Only show MONTH_TABS that have data saved in localStorage
+  // Only show MONTH_TABS that have data saved in localStorage or sessionStorage
   var periods = [];
   MONTH_TABS.forEach(function(tab) {
-    try { if (localStorage.getItem(_monthStorageKey(tab.key))) periods.push(tab.label); } catch(e){}
+    if (_getMonthRaw(tab.key)) periods.push(tab.label);
   });
   return periods; // already in chronological order (MONTH_TABS is ordered)
 }
@@ -4344,7 +4355,7 @@ function globalPeriodChange(periodStr) {
 
   // Load from the new month-keyed storage
   var raw = null;
-  try { raw = localStorage.getItem(_monthStorageKey(tab.key)); } catch(e){}
+  raw = _getMonthRaw(tab.key);
   if (raw) {
     var data = {};
     try { data = JSON.parse(raw); } catch(e){}
@@ -4772,7 +4783,7 @@ function initPamWeekSnapshots() {
     // Find most recent month with data and pre-load it into Edit Inputs
     var latestMonthKey = null;
     for (var mi = MONTH_TABS.length - 1; mi >= 0; mi--) {
-      try { if (localStorage.getItem(_monthStorageKey(MONTH_TABS[mi].key))) { latestMonthKey = MONTH_TABS[mi].key; break; } } catch(e2){}
+      try { if (_getMonthRaw(MONTH_TABS[mi].key)) { latestMonthKey = MONTH_TABS[mi].key; break; } } catch(e2){}
     }
     if (latestMonthKey) { _activeEditMonth = latestMonthKey; loadMonthData(latestMonthKey); buildEditMonthTabs(); }
   } catch(e) {}
