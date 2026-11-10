@@ -532,7 +532,7 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
           <div class="kpi-value" id="d-cap-hc-total" style="font-size:2rem">&#8212;</div>
           <div style="font-size:11px;color:var(--text3);margin-top:2px" id="d-cap-hc-deltas"></div>
           <div style="font-size:10px;color:var(--text3);margin-top:3px">Source Data: <span id="d-cap-source"></span></div>
-          <div id="d-cap-hc-notes-wrap" style="display:none;margin-top:8px;font-size:11px;color:var(--text2)"><span style="font-weight:600">Headcount Notes:&nbsp;</span><span id="d-cap-hc-notes" style="white-space:pre-wrap;overflow-wrap:anywhere"></span></div>
+          <div id="d-cap-hc-notes-wrap" style="display:none;font-size:10px;color:var(--text3);margin-top:3px"><span style="font-weight:600">Headcount Notes:&nbsp;</span><span id="d-cap-hc-notes" style="white-space:pre-wrap;overflow-wrap:anywhere"></span></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
             <div style="background:rgba(var(--tp-rgb),.06);border-radius:8px;padding:10px 12px">
               <div class="kpi-label" style="font-size:10px;margin-bottom:3px">LCC Hires %</div>
@@ -544,6 +544,7 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
               <div class="kpi-label" style="font-size:10px;margin-bottom:3px">Band Mix Score</div>
               <div class="kpi-value-sm" id="d-cap-band-mix">&#8212;</div>
               <div style="font-size:10px;color:var(--text3);margin-top:3px" id="d-cap-band-delta"></div>
+              <div id="d-cap-band-source-wrap" style="display:none;font-size:10px;color:var(--text3);margin-top:3px">Source Data: <span id="d-cap-band-source"></span></div>
               <div style="font-size:10px;color:var(--text3);font-style:italic;margin-top:2px" id="d-cap-band-note"></div>
             </div>
           </div>
@@ -1088,10 +1089,10 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
           </div>
         </div>
       </div>
-      <!-- Headcount Notes + Band Mix Note (stored as capacity flex fields; persisted per period) -->
+      <!-- Headcount Notes + Band Mix Source Data (stored as capacity flex fields; persisted per period) -->
       <div class="input-section" style="margin-top:12px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg)">
         <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px">
-          Headcount &amp; Band Mix Notes
+          Headcount Notes &amp; Band Mix Source
           <span style="display:inline;font-size:10.5px;font-weight:400;color:var(--text3);margin-left:6px">Saved per period with the Save button</span>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
@@ -1100,8 +1101,8 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
             <textarea id="i-hc-notes-edit" rows="3" placeholder="Notes shown on the Total Headcount card" style="flex:1;padding:5px 8px;border:1px solid var(--input-border);border-radius:4px;font-size:12px;font-family:inherit;background:var(--card);color:var(--text);resize:vertical" oninput="_syncCapFlexEdit('Headcount Notes',this.value)"></textarea>
           </div>
           <div style="display:flex;align-items:center;gap:6px">
-            <label for="i-band-note-edit" style="font-size:11.5px;font-weight:600;color:var(--text2);white-space:nowrap;min-width:112px">Band Mix Note:</label>
-            <input type="text" id="i-band-note-edit" placeholder="e.g. Target: 4.68" style="flex:1;padding:5px 8px;border:1px solid var(--input-border);border-radius:4px;font-size:12px;font-family:inherit;background:var(--card);color:var(--text)" oninput="_syncCapFlexEdit('Band Mix Note',this.value)">
+            <label for="i-band-source-edit" style="font-size:11.5px;font-weight:600;color:var(--text2);white-space:nowrap;min-width:112px">Band Mix Source:</label>
+            <input type="text" id="i-band-source-edit" placeholder="e.g. Score" style="flex:1;padding:5px 8px;border:1px solid var(--input-border);border-radius:4px;font-size:12px;font-family:inherit;background:var(--card);color:var(--text)" oninput="_syncCapFlexEdit('Band Mix Source Data',this.value)">
           </div>
         </div>
       </div>
@@ -2003,7 +2004,7 @@ var FLEX_FIELDS_DEFAULTS = {
     {label:'LCC % Change YtY', value:''},
     {label:'Hiring Note', value:''},
     {label:'Headcount Notes', value:''},
-    {label:'Band Mix Note', value:''}
+    {label:'Band Mix Source Data', value:''}
   ],
   fulfillment: [
     {label:'Period', value:''},
@@ -2325,10 +2326,17 @@ function renderCapacityCards() {
   if (hcNotesWrap) hcNotesWrap.style.display = String(hcNotes).trim() ? '' : 'none';
   var hcNotesEdit = document.getElementById('i-hc-notes-edit');
   if (hcNotesEdit && hcNotesEdit.value !== hcNotes) hcNotesEdit.value = hcNotes;
+
+  var bandSrc = fv('Band Mix Source Data');
+  if (!bandSrc) bandSrc = fv('Band Mix Source');
+  setEl('d-cap-band-source', bandSrc);
+  var bandSrcWrap = document.getElementById('d-cap-band-source-wrap');
+  if (bandSrcWrap) bandSrcWrap.style.display = String(bandSrc).trim() ? '' : 'none';
+  var bandSrcEdit = document.getElementById('i-band-source-edit');
+  if (bandSrcEdit && bandSrcEdit.value !== bandSrc) bandSrcEdit.value = bandSrc;
+
   var bandNote = fv('Band Mix Note');
   setEl('d-cap-band-note', bandNote);
-  var bandNoteEdit = document.getElementById('i-band-note-edit');
-  if (bandNoteEdit && bandNoteEdit.value !== bandNote) bandNoteEdit.value = bandNote;
 
   // Sync hiring funnel inputs from flex fields so renderHiringFunnel() always uses
   // the correct period's data, regardless of what the hidden legacy inputs hold.
@@ -2495,10 +2503,13 @@ function _syncCapFlexEdit(label, val) {
 // Anything else (already formatted, text, percentages, blanks) is returned unchanged.
 // Never use the result for storage or calculation.
 function fmtThousands(v) {
-  var s = String(v == null ? '' : v);
-  var m = s.trim().match(/^([+\-]?)(\d{4,})(\.\d+)?$/);
+  var s = String(v == null ? '' : v).trim();
+  if (!s) return '';
+  var clean = s.replace(/,/g, '');
+  var m = clean.match(/^([+\-]?)(\d+)(\.\d+)?$/);
   if (!m) return s;
-  return m[1] + m[2].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (m[3] || '');
+  var intPart = m[2].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return m[1] + intPart + (m[3] || '');
 }
 
 // Called by QtQ edit input oninput
