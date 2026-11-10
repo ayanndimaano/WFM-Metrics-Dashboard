@@ -5974,6 +5974,11 @@ function openHsSnapPanel(snap, snaps, snapIdx) {
   if (titleEl) titleEl.textContent = snap.label;
   var qselOpen = document.getElementById('hs-dash-quarter');
   if (qselOpen) qselOpen.value = _isHsQuarterLabel(snap.label) ? snap.label : '';
+  // Monthly snapshot view: restore the viewing-period label (a quarter view may have changed it).
+  if (!_isHsQuarterLabel(snap.label)) {
+    var hdrEl = document.getElementById('d-hs-period');
+    if (hdrEl && typeof _currentPeriod === 'string') hdrEl.textContent = _currentPeriod;
+  }
 
   var rows = snap.rows || [];
   // Build header: Country | Row Type | Band 2 ΓÇª Band D
@@ -6028,12 +6033,17 @@ function closeHsSnapPanel() {
   var panel = document.getElementById('hs-snap-panel');
   if (panel) panel.style.display = 'none';
   var qsel = document.getElementById('hs-dash-quarter'); if (qsel) qsel.value = '';
+  var hdrEl = document.getElementById('d-hs-period');
+  if (hdrEl && typeof _currentPeriod === 'string') hdrEl.textContent = _currentPeriod;
   renderHsSnapTags('');
 }
 
 // Dashboard quarter dropdown: show the saved quarterly Hiring Speed snapshot, or an empty-state message.
 function hsDashQuarterChange(q) {
   if (!q) { closeHsSnapPanel(); return; }
+  // Header shows the selected quarter (e.g. "Period: Q3 2026"), not the viewing-period month.
+  var periodEl = document.getElementById('d-hs-period');
+  if (periodEl) periodEl.textContent = q;
   var snaps = _loadHsSnaps(), idx = -1;
   for (var i = 0; i < snaps.length; i++) { if (snaps[i].label === q) { idx = i; break; } }
   if (idx >= 0) { openHsSnapPanel(snaps[idx], snaps, idx); return; }
