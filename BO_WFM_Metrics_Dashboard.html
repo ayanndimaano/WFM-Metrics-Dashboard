@@ -544,7 +544,7 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
               <div class="kpi-label" style="font-size:10px;margin-bottom:3px">Band Mix Score</div>
               <div class="kpi-value-sm" id="d-cap-band-mix">&#8212;</div>
               <div style="font-size:10px;color:var(--text3);margin-top:3px" id="d-cap-band-delta"></div>
-              <div id="d-cap-band-source-wrap" style="display:none;font-size:10px;color:var(--text3);margin-top:3px">Source Data: <span id="d-cap-band-source"></span></div>
+              <div style="font-size:10px;color:var(--text3);font-style:italic;margin-top:2px" id="d-cap-band-note"></div>
             </div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;font-size:10px;color:var(--text3)">
@@ -591,14 +591,7 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
       <div class="card-body-sm">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
           <div>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-              <div style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Hiring Speed by Country &amp; Band</div>
-              <select id="hs-dash-quarter" title="View a quarterly Hiring Speed snapshot" style="font-size:11px;padding:3px 6px;border:1px solid var(--input-border);border-radius:4px;font-family:inherit;background:var(--card);color:var(--text)">
-                <option value="">Quarter&hellip;</option>
-                <option value="Q3 2026">Q3 2026</option>
-                <option value="Q4 2026">Q4 2026</option>
-              </select>
-            </div>
+            <div style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Hiring Speed by Country &amp; Band</div>
             <div style="font-size:11px;color:var(--text3);margin-top:2px">Average days from hiring ticket submission to onboarding &middot; <span style="color:var(--s-green);font-weight:600">Green</span> = below SLA &middot; <span style="color:var(--s-red);font-weight:600">Red</span> = over SLA &middot; Period: <span id="d-hs-period"></span></div>
           </div>
         </div>
@@ -1095,10 +1088,10 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
           </div>
         </div>
       </div>
-      <!-- Headcount Notes + Band Mix Source Data (stored as capacity flex fields; persisted per period) -->
+      <!-- Headcount Notes + Band Mix Note (stored as capacity flex fields; persisted per period) -->
       <div class="input-section" style="margin-top:12px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg)">
         <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px">
-          Headcount Notes &amp; Band Mix Source
+          Headcount &amp; Band Mix Notes
           <span style="display:inline;font-size:10.5px;font-weight:400;color:var(--text3);margin-left:6px">Saved per period with the Save button</span>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
@@ -1107,8 +1100,8 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
             <textarea id="i-hc-notes-edit" rows="3" placeholder="Notes shown on the Total Headcount card" style="flex:1;padding:5px 8px;border:1px solid var(--input-border);border-radius:4px;font-size:12px;font-family:inherit;background:var(--card);color:var(--text);resize:vertical" oninput="_syncCapFlexEdit('Headcount Notes',this.value)"></textarea>
           </div>
           <div style="display:flex;align-items:center;gap:6px">
-            <label for="i-band-source-edit" style="font-size:11.5px;font-weight:600;color:var(--text2);white-space:nowrap;min-width:112px">Band Mix Source:</label>
-            <input type="text" id="i-band-source-edit" placeholder="e.g. Score" style="flex:1;padding:5px 8px;border:1px solid var(--input-border);border-radius:4px;font-size:12px;font-family:inherit;background:var(--card);color:var(--text)" oninput="_syncCapFlexEdit('Band Mix Source Data',this.value)">
+            <label for="i-band-note-edit" style="font-size:11.5px;font-weight:600;color:var(--text2);white-space:nowrap;min-width:112px">Band Mix Note:</label>
+            <input type="text" id="i-band-note-edit" placeholder="e.g. Target: 4.68" style="flex:1;padding:5px 8px;border:1px solid var(--input-border);border-radius:4px;font-size:12px;font-family:inherit;background:var(--card);color:var(--text)" oninput="_syncCapFlexEdit('Band Mix Note',this.value)">
           </div>
         </div>
       </div>
@@ -1141,17 +1134,9 @@ tfoot .pam-grid-total td{background:rgba(var(--tp-rgb),.06)!important;font-weigh
             <input type="file" id="hs-photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload('hs',this)">
             <div style="width:1px;height:20px;background:var(--border)"></div>
             <div class="pam-week-picker">
-              <label for="hs-snap-month">Month:</label>
+              <label for="hs-snap-month">Month / Quarter:</label>
               <select id="hs-snap-month" style="font-size:11px;padding:3px 6px;border:1px solid var(--input-border);border-radius:4px;font-family:inherit;background:var(--card);color:var(--text)"></select>
               <select id="hs-snap-year" style="font-size:11px;padding:3px 6px;border:1px solid var(--input-border);border-radius:4px;font-family:inherit;background:var(--card);color:var(--text);margin-left:4px"></select>
-            </div>
-            <div class="pam-week-picker">
-              <label for="hs-edit-quarter">Quarter:</label>
-              <select id="hs-edit-quarter" onchange="hsEditQuarterChange(this.value)" title="Quarterly mode edits and saves a separate quarter snapshot; monthly snapshots are not touched" style="font-size:11px;padding:3px 6px;border:1px solid var(--input-border);border-radius:4px;font-family:inherit;background:var(--card);color:var(--text)">
-                <option value="">Monthly (use Month/Year)</option>
-                <option value="Q3 2026">Q3 2026</option>
-                <option value="Q4 2026">Q4 2026</option>
-              </select>
             </div>
             <button class="btn-primary" style="font-size:11px;padding:4px 12px;gap:5px" onclick="saveHsSnapshot()">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -1814,7 +1799,7 @@ function saveMonthData() {
     fields: {},
     pam: document.getElementById('i-pam-rows').value,
     ppm: document.getElementById('i-ppm-rows').value,
-    hs:  _hsMonthlyJson(),
+    hs:  (document.getElementById('i-hs-rows') || {}).value || '',
     flexFields: {
       capacity:    JSON.parse(JSON.stringify(FLEX_FIELDS.capacity    || [])),
       fulfillment: JSON.parse(JSON.stringify(FLEX_FIELDS.fulfillment || [])),
@@ -1879,7 +1864,8 @@ function loadMonthData(key) {
     if (pamTa) { pamTa.value = '[]'; pamGridLoad([]); }
     var ppmTa = document.getElementById('i-ppm-rows');
     if (ppmTa) { ppmTa.value = '[]'; ppmGridLoad([]); }
-    _hsApplyMonthly('[]');
+    var hsTa = document.getElementById('i-hs-rows');
+    if (hsTa) { hsTa.value = '[]'; if (typeof hsGridLoad === 'function') hsGridLoad([]); }
     setPhoto('pam', null); setPhoto('ppm', null); setPhoto('hs', null);
     if (typeof applyInputs === 'function') applyInputs();
     return;
@@ -1894,7 +1880,7 @@ function loadMonthData(key) {
   }
   if (data.pam) { document.getElementById('i-pam-rows').value = data.pam; try { pamGridLoad(JSON.parse(data.pam)); } catch(eg){} }
   if (data.ppm) { document.getElementById('i-ppm-rows').value = data.ppm; try { ppmGridLoad(JSON.parse(data.ppm)); } catch(eg){} }
-  if (data.hs)  { _hsApplyMonthly(data.hs); }
+  if (data.hs)  { var hsTaLoad = document.getElementById('i-hs-rows'); if(hsTaLoad) hsTaLoad.value = data.hs; try { if(typeof hsGridLoad==='function') hsGridLoad(JSON.parse(data.hs)); } catch(eg){} }
   if (data.flexFields) {
     ['capacity','fulfillment','workforce'].forEach(function(s){
       if (data.flexFields[s]) flexFieldsLoad(s, data.flexFields[s]);
@@ -1934,9 +1920,6 @@ function clearMonthData() {
 
 // Switch active edit month tab
 function switchEditMonth(key) {
-  // Leave Hiring Speed quarter mode first: the parked monthly rows go back to the grid, so the month being left keeps
-  // its own rows and the month being opened can never inherit quarter rows (or the previous month's rows).
-  if (_hsQuarterMode && typeof hsEditQuarterChange === 'function') hsEditQuarterChange('');
   _activeEditMonth = key;
   // Update tab styles
   document.querySelectorAll('.edit-month-tab').forEach(function(btn){
@@ -2020,7 +2003,7 @@ var FLEX_FIELDS_DEFAULTS = {
     {label:'LCC % Change YtY', value:''},
     {label:'Hiring Note', value:''},
     {label:'Headcount Notes', value:''},
-    {label:'Band Mix Source Data', value:''}
+    {label:'Band Mix Note', value:''}
   ],
   fulfillment: [
     {label:'Period', value:''},
@@ -2342,12 +2325,10 @@ function renderCapacityCards() {
   if (hcNotesWrap) hcNotesWrap.style.display = String(hcNotes).trim() ? '' : 'none';
   var hcNotesEdit = document.getElementById('i-hc-notes-edit');
   if (hcNotesEdit && hcNotesEdit.value !== hcNotes) hcNotesEdit.value = hcNotes;
-  var bandSrc = fv('Band Mix Source Data');
-  setEl('d-cap-band-source', bandSrc);
-  var bandSrcWrap = document.getElementById('d-cap-band-source-wrap');
-  if (bandSrcWrap) bandSrcWrap.style.display = String(bandSrc).trim() ? '' : 'none';
-  var bandSrcEdit = document.getElementById('i-band-source-edit');
-  if (bandSrcEdit && bandSrcEdit.value !== bandSrc) bandSrcEdit.value = bandSrc;
+  var bandNote = fv('Band Mix Note');
+  setEl('d-cap-band-note', bandNote);
+  var bandNoteEdit = document.getElementById('i-band-note-edit');
+  if (bandNoteEdit && bandNoteEdit.value !== bandNote) bandNoteEdit.value = bandNote;
 
   // Sync hiring funnel inputs from flex fields so renderHiringFunnel() always uses
   // the correct period's data, regardless of what the hidden legacy inputs hold.
@@ -3078,7 +3059,7 @@ function _buildSectionEntry(label, sec) {
   });
   // Capture grid JSON where applicable
   if (sec === 'capacity') {
-    entry.hs = _hsMonthlyJson();
+    var hsTa = document.getElementById('i-hs-rows'); entry.hs = hsTa ? hsTa.value : '';
     entry.flexFields = JSON.stringify(FLEX_FIELDS.capacity || FLEX_FIELDS_DEFAULTS.capacity);
   }
   if (sec === 'fulfillment') {
@@ -3153,7 +3134,7 @@ function viewSnapshot(idx) {
     FIELD_MAP.forEach(function(e){ var inp=document.getElementById(e[0]); if(inp) _liveStash[e[0]]=inp.value; });
     _liveStash._pam = document.getElementById('i-pam-rows').value;
     _liveStash._ppm = document.getElementById('i-ppm-rows').value;
-    _liveStash._hs = _hsMonthlyJson();
+    var hsTaStash = document.getElementById('i-hs-rows'); _liveStash._hs = hsTaStash ? hsTaStash.value : '';
   }
   // Restore only the fields present in this snapshot (leaves unrelated fields at live values)
   Object.keys(entry.fields).forEach(function(id){
@@ -3161,7 +3142,7 @@ function viewSnapshot(idx) {
   });
   if (entry.pam) { document.getElementById('i-pam-rows').value = entry.pam; try { pamGridLoad(JSON.parse(entry.pam)); } catch(eg){} }
   if (entry.ppm) { document.getElementById('i-ppm-rows').value = entry.ppm; try { ppmGridLoad(JSON.parse(entry.ppm)); } catch(eg){} }
-  if (entry.hs)  { _hsApplyMonthly(entry.hs); }
+  if (entry.hs)  { var hsTaLoad = document.getElementById('i-hs-rows'); if(hsTaLoad) hsTaLoad.value = entry.hs; try { hsGridLoad(JSON.parse(entry.hs)); } catch(eg){} }
   // Restore per-section flex fields
   ['capacity','fulfillment','workforce'].forEach(function(s) {
     var raw = entry['flexFields_' + s] || (s === 'capacity' ? entry.flexFields : null);
@@ -3186,7 +3167,9 @@ function restoreLive() {
   try { pamGridLoad(JSON.parse(_liveStash._pam || '[]')); } catch(eg){}
   document.getElementById('i-ppm-rows').value = _liveStash._ppm || '';
   try { ppmGridLoad(JSON.parse(_liveStash._ppm || '[]')); } catch(eg){}
-  _hsApplyMonthly(_liveStash._hs || '[]');
+  var hsTaRestore = document.getElementById('i-hs-rows');
+  if (hsTaRestore) hsTaRestore.value = _liveStash._hs || '';
+  try { if (typeof hsGridLoad === 'function') hsGridLoad(JSON.parse(_liveStash._hs || '[]')); } catch(eg){}
   // Restore stashed flex fields
   if (_liveStash._flexFields) {
     ['capacity','fulfillment','workforce'].forEach(function(s) {
@@ -4934,7 +4917,7 @@ function globalPeriodChange(periodStr) {
     }
     if (data.pam) { document.getElementById('i-pam-rows').value = data.pam; try { pamGridLoad(JSON.parse(data.pam)); } catch(eg){} }
     if (data.ppm) { document.getElementById('i-ppm-rows').value = data.ppm; try { ppmGridLoad(JSON.parse(data.ppm)); } catch(eg){} }
-    if (data.hs)  { _hsApplyMonthly(data.hs); }
+    if (data.hs)  { var hsTaGpc = document.getElementById('i-hs-rows'); if(hsTaGpc) hsTaGpc.value = data.hs; try { if(typeof hsGridLoad==='function') hsGridLoad(JSON.parse(data.hs)); } catch(eg){} }
     if (data.flexFields) {
       ['capacity','fulfillment','workforce'].forEach(function(s){
         if (data.flexFields[s]) flexFieldsLoad(s, data.flexFields[s]);
@@ -5309,30 +5292,6 @@ var HS_PHOTO_KEY = 'dash_hs_photo';
 
 var HS_DEFAULT = [];
 
-// Hiring Speed quarter mode (Edit Inputs). '' = monthly mode (default). In quarter mode ('Q3 2026' / 'Q4 2026') the
-// Hiring Speed grid and #i-hs-rows hold the QUARTER's rows, and the month tab's own rows are parked in
-// _hsMonthlyStash so they can be neither overwritten nor saved into the wrong place. Every monthly code path that
-// used to read/write #i-hs-rows directly goes through _hsMonthlyJson() / _hsApplyMonthly() below.
-// (Declared before the main init() because init() -> loadMonthData() calls these helpers.)
-var _hsQuarterMode = '';
-var _hsMonthlyStash = '[]';
-
-function _isHsQuarterLabel(label) { return /^Q[1-4]\s+\d{4}$/.test(String(label || '').trim()); }
-
-// The month tab's Hiring Speed rows as a JSON string (what saveMonthData / snapshots must store).
-function _hsMonthlyJson() {
-  if (_hsQuarterMode) return _hsMonthlyStash || '';
-  var ta = document.getElementById('i-hs-rows');
-  return (ta && ta.value) || '';
-}
-
-// Load a month's Hiring Speed rows. In quarter mode only the parked copy is updated; the grid keeps showing the quarter.
-function _hsApplyMonthly(json) {
-  if (_hsQuarterMode) { _hsMonthlyStash = json; return; }
-  var ta = document.getElementById('i-hs-rows');
-  if (ta) ta.value = json;
-  try { if (typeof hsGridLoad === 'function') hsGridLoad(JSON.parse(json)); } catch (eg) {}
-}
 
 // ── v2 init (hydration) ───────────────────────────────────────────────────────
 // MOVED from the end of the script so that __DATA__ is populated from the
@@ -5868,7 +5827,6 @@ function _initPpmMonthPicker() {
 var HS_SNAP_KEY = 'dash_hs_snapshots';
 
 function _buildHsSnapLabel() {
-  if (_hsQuarterMode) return _hsQuarterMode;   // quarter mode saves under "Q3 2026" / "Q4 2026"
   var mSel = document.getElementById('hs-snap-month');
   var ySel = document.getElementById('hs-snap-year');
   if (mSel && ySel && mSel.value && ySel.value) return mSel.value + ' ' + ySel.value;
@@ -5888,25 +5846,16 @@ function saveHsSnapshot() {
   var entry = { label: label, ts: Date.now(), rows: rows };
   if (idx >= 0) snaps[idx] = entry; else snaps.push(entry);
   snaps.sort(function(a,b){ return parseLabelOrder(a.label) - parseLabelOrder(b.label); });
-  // Keep the newest 12 MONTHLY snapshots (existing behaviour). Quarter snapshots are never counted or trimmed,
-  // so saving a quarter cannot evict a monthly snapshot (and vice versa).
-  var monthlyCount = snaps.filter(function(s) { return !_isHsQuarterLabel(s.label); }).length;
-  while (monthlyCount > 12) {
-    for (var k = 0; k < snaps.length; k++) { if (!_isHsQuarterLabel(snaps[k].label)) { snaps.splice(k, 1); break; } }
-    monthlyCount--;
-  }
+  if (snaps.length > 20) snaps = snaps.slice(snaps.length - 20);
   try { localStorage.setItem(HS_SNAP_KEY, JSON.stringify(snaps)); } catch(ex){}
   // v2: also persist to __DATA__
   try { __DATA__.hsSnaps = snaps; window._mdbAutosave && window._mdbAutosave(); } catch(ex2){}
-  // Also sync the dashboard period label (monthly saves only; a quarter is shown via the Quarter dropdown)
+  // Also sync the dashboard period label
   var periodEl = document.getElementById('d-hs-period');
-  if (periodEl && !_hsQuarterMode) periodEl.textContent = label;
+  if (periodEl) periodEl.textContent = label;
   var conf = document.getElementById('hs-snap-confirm');
   if (conf) { conf.textContent = '\u2713 Saved!'; conf.style.display = 'inline'; setTimeout(function(){ conf.style.display = 'none'; }, 2000); }
-  renderHsSnapTags(_hsQuarterMode ? '' : label);
-  // If the dashboard is currently showing this quarter, refresh it with the newly saved rows.
-  var qsel = document.getElementById('hs-dash-quarter');
-  if (_hsQuarterMode && qsel && qsel.value === label) hsDashQuarterChange(label);
+  renderHsSnapTags(label);
 }
 
 function _loadHsSnaps() {
@@ -5916,19 +5865,21 @@ function _loadHsSnaps() {
   return [];
 }
 
-// ΓöÇΓöÇ Month picker init for HS ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+// ── Month picker init for HS ──────────────────────────────────────────────────
 function _initHsMonthPicker() {
   var mSel = document.getElementById('hs-snap-month');
   var ySel = document.getElementById('hs-snap-year');
   if (!mSel || mSel.options.length) return;
-  MONTH_FULL.forEach(function(m){ var o=document.createElement('option'); o.value=m; o.textContent=m; mSel.appendChild(o); });
+  MONTH_FULL.concat(['Q1', 'Q2', 'Q3', 'Q4']).forEach(function(m){ var o=document.createElement('option'); o.value=m; o.textContent=m; mSel.appendChild(o); });
   var cy = new Date().getFullYear();
   for (var y = cy - 2; y <= cy + 2; y++) { var o=document.createElement('option'); o.value=y; o.textContent=y; ySel.appendChild(o); }
   // Default to current cap period
   var capEl = document.getElementById('i-cap-period');
   var label = capEl ? capEl.value.trim() : '';
+  var qm = label.match(/^([Qq][1-4])\s+(\d{4})/);
   var m2 = label.match(/([A-Za-z]+)\s+(\d{4})/);
-  if (m2) { mSel.value = m2[1]; ySel.value = m2[2]; }
+  if (qm) { mSel.value = qm[1].toUpperCase(); ySel.value = qm[2]; }
+  else if (m2) { mSel.value = m2[1]; ySel.value = m2[2]; }
   else {
     var now = new Date();
     mSel.value = MONTH_FULL[now.getMonth()];
@@ -5936,20 +5887,17 @@ function _initHsMonthPicker() {
   }
 }
 
-// ΓöÇΓöÇ HS Snapshot display on dashboard ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+// ── HS Snapshot display on dashboard ──────────────────────────────────────────
 function renderHsSnapTags(activeLabel) {
   var container = document.getElementById('hs-month-tags');
   if (!container) return;
   container.innerHTML = '';
   var snaps = _loadHsSnaps();
-  // Quarter snapshots are viewed through the Quarter dropdown; this strip stays "Monthly snapshots".
-  var hasMonthly = snaps.some(function(s) { return !_isHsQuarterLabel(s.label); });
-  if (!hasMonthly) {
+  if (!snaps.length) {
     container.innerHTML = '<span style="font-size:11px;color:var(--text3);font-style:italic">No snapshots yet \u2014 save from Edit Inputs</span>';
     return;
   }
   snaps.forEach(function(snap, idx) {
-    if (_isHsQuarterLabel(snap.label)) return;
     var active = snap.label === activeLabel;
     var tag = document.createElement('button');
     tag.textContent = snap.label;
@@ -5972,16 +5920,9 @@ function openHsSnapPanel(snap, snaps, snapIdx) {
   var tbody = document.getElementById('hs-panel-tbody');
   if (!panel || !thead || !tbody) return;
   if (titleEl) titleEl.textContent = snap.label;
-  var qselOpen = document.getElementById('hs-dash-quarter');
-  if (qselOpen) qselOpen.value = _isHsQuarterLabel(snap.label) ? snap.label : '';
-  // Monthly snapshot view: restore the viewing-period label (a quarter view may have changed it).
-  if (!_isHsQuarterLabel(snap.label)) {
-    var hdrEl = document.getElementById('d-hs-period');
-    if (hdrEl && typeof _currentPeriod === 'string') hdrEl.textContent = _currentPeriod;
-  }
 
   var rows = snap.rows || [];
-  // Build header: Country | Row Type | Band 2 ΓÇª Band D
+  // Build header: Country | Row Type | Band 2 … Band D
   thead.innerHTML = '<tr style="background:var(--tbl-head)">'
     + '<th style="text-align:left;padding:8px 10px;font-size:11.5px;color:var(--tbl-head-text);white-space:nowrap">Country</th>'
     + '<th style="padding:8px 10px;font-size:11.5px;color:var(--tbl-head-text);white-space:nowrap;text-align:center">Row</th>'
@@ -6032,55 +5973,7 @@ function openHsSnapPanel(snap, snaps, snapIdx) {
 function closeHsSnapPanel() {
   var panel = document.getElementById('hs-snap-panel');
   if (panel) panel.style.display = 'none';
-  var qsel = document.getElementById('hs-dash-quarter'); if (qsel) qsel.value = '';
-  var hdrEl = document.getElementById('d-hs-period');
-  if (hdrEl && typeof _currentPeriod === 'string') hdrEl.textContent = _currentPeriod;
   renderHsSnapTags('');
-}
-
-// Dashboard quarter dropdown: show the saved quarterly Hiring Speed snapshot, or an empty-state message.
-function hsDashQuarterChange(q) {
-  if (!q) { closeHsSnapPanel(); return; }
-  // Header shows the selected quarter (e.g. "Period: Q3 2026"), not the viewing-period month.
-  var periodEl = document.getElementById('d-hs-period');
-  if (periodEl) periodEl.textContent = q;
-  var snaps = _loadHsSnaps(), idx = -1;
-  for (var i = 0; i < snaps.length; i++) { if (snaps[i].label === q) { idx = i; break; } }
-  if (idx >= 0) { openHsSnapPanel(snaps[idx], snaps, idx); return; }
-  openHsSnapPanel({ label: q, rows: [] }, snaps, -1);
-  var tb = document.getElementById('hs-panel-tbody');
-  if (tb) tb.innerHTML = '<tr><td colspan="12" style="padding:12px;text-align:center;font-size:12px;color:var(--text3)">No Hiring Speed data saved for ' + escHtml(q) + ' yet. Save it from Edit Inputs &rarr; Hiring Speed &rarr; Quarter.</td></tr>';
-}
-
-// Edit Inputs quarter dropdown. '' = monthly mode. Switching modes parks the month tab's rows in _hsMonthlyStash
-// and loads the quarter's saved snapshot rows (or a blank grid) into the shared grid, and back again, so quarter
-// rows can never be written into a month's data and monthly rows can never be saved as a quarter.
-// Unsaved quarter edits are discarded when leaving quarter mode: use "Save Snapshot" first to keep them.
-function hsEditQuarterChange(q) {
-  q = q || '';
-  var sel = document.getElementById('hs-edit-quarter');
-  if (q === _hsQuarterMode) { if (sel && sel.value !== q) sel.value = q; return; }
-  var ta = document.getElementById('i-hs-rows');
-  if (!_hsQuarterMode) {
-    hsGridSyncBeforeApply();                       // flush the grid into the textarea first
-    _hsMonthlyStash = ta ? ta.value : '[]';        // park the month's rows
-  }
-  _hsQuarterMode = q;
-  var rows = [];
-  if (q) {
-    var snaps = _loadHsSnaps();
-    for (var i = 0; i < snaps.length; i++) {
-      if (snaps[i].label === q) { try { rows = JSON.parse(JSON.stringify(snaps[i].rows || [])); } catch (e) { rows = []; } break; }
-    }
-  } else {
-    try { rows = JSON.parse(_hsMonthlyStash || '[]'); } catch (e) { rows = []; }
-    if (!Array.isArray(rows)) rows = [];
-  }
-  hsGridLoad(rows);                                // rebuilds the grid and refreshes #i-hs-rows
-  if (sel && sel.value !== q) sel.value = q;
-  var mSel = document.getElementById('hs-snap-month'), ySel = document.getElementById('hs-snap-year');
-  if (mSel) mSel.disabled = !!q;
-  if (ySel) ySel.disabled = !!q;
 }
 
 // ΓöÇΓöÇ setPhoto / removePhoto handle all photo prefixes (pam, ppm, hs) via the unified
